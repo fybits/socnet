@@ -10,8 +10,10 @@ import {
   CardContent,
   CardHeader,
   withStyles,
+  Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
-import { Link as RouteLink } from 'react-router-dom';
+import { Link as RouteLink, Redirect } from 'react-router-dom';
 import { SIGN_UP } from '../app/actions'
 import { connect } from 'react-redux';
 
@@ -32,38 +34,12 @@ class SignupPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstname: '',
-      surname: '',
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
-      confirmation: '',
-      isPasswordsMatching: true,
-      isPasswordSafe: false,
-      isValidEmail: false,
-      isValid: false,
+      password_confirmation: '',
     }
-    console.log(this.props.signup)
-  }
-  
-
-  validate = () => {
-    this.setState((prevState) => {
-      let isPasswordsMatching = prevState.password === prevState.confirmation;
-      let isPasswordSafe = (prevState.password.length >= 8 && /[a-zA-Z]/g.test(prevState.password));
-      let isValidEmail = /\S+@\S+\.\S+/g.test(prevState.email);
-      let isValid = isPasswordSafe &&
-                    isPasswordsMatching &&
-                    isValidEmail &&
-                    Boolean(prevState.firstname) &&
-                    Boolean(prevState.surname);
-      return {
-        ...prevState,
-        isPasswordsMatching,
-        isPasswordSafe,
-        isValidEmail,
-        isValid,
-      }
-    })
   }
 
   handleInput = (event) => {
@@ -72,16 +48,23 @@ class SignupPage extends Component {
       ...prevState,
       [event.target.name]: event.target.value.trim()
     }))
-    this.validate();
   }
   
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    this.props.signup(formData);
+  }
+
   render () {
-    const { classes } = this.props;
+    const { classes, errors, isFetching, isSignUpSuccessful } = this.props;
 
     return (
       <Grid container justify="center" alignItems="center" style={{ height: '100vh' }}>
+        {isSignUpSuccessful ? <Redirect to="/login"/> : null}
         <Grid item xs sm={8} md={5} lg={4} xl={3}>
           <Card className={classes.paper}>
+            <form onSubmit={this.handleSubmit}>
             <CardHeader
               title="Sign up"
               titleTypographyProps={{ color: 'primary', variant: 'h4' }}
@@ -92,7 +75,7 @@ class SignupPage extends Component {
                 required
                 className={classes.textField}
                 fullWidth
-                name="firstname"
+                name="first_  name"
                 variant="outlined"
                 label="First name"
                 value={this.state.firstname}
@@ -100,19 +83,18 @@ class SignupPage extends Component {
               />
               <br />
               <TextField
-                required
                 className={classes.textField}
                 fullWidth
-                name="surname"
+                name="last_name"
                 variant="outlined"
-                label="Surname"
-                value={this.state.surname}
+                label="Last name"
+                value={this.state.lastname}
                 onChange={this.handleInput}
-              />
+                />
               <TextField
                 required
-                error={!this.state.isValidEmail}
-                helperText={!this.state.isValidEmail && "Not valid e-mail address"}
+                error={Boolean(errors.email)}
+                helperText={errors.email && errors.email[0]}
                 className={classes.textField}
                 fullWidth
                 name="email"
@@ -120,11 +102,11 @@ class SignupPage extends Component {
                 label="E-mail"
                 value={this.state.email}
                 onChange={this.handleInput}
-              />
+                />
               <TextField
                 required
-                error={!this.state.isPasswordSafe}
-                helperText={!this.state.isPasswordSafe && "Password must be at least 8 characters long and contain letters"}
+                error={Boolean(errors.password)}
+                helperText={errors.password && errors.password[0]}
                 className={classes.textField}
                 fullWidth
                 name="password"
@@ -136,17 +118,17 @@ class SignupPage extends Component {
               />
               <TextField
                 required
-                error={!this.state.isPasswordsMatching}
-                helperText={!this.state.isPasswordsMatching && "Passwords don't match"}
+                error={Boolean(errors.password_confirmation)}
+                helperText={errors.password_confirmation && errors.password_confirmation[0]}
                 className={classes.textField}
                 fullWidth
-                name="confirmation"
+                name="password_confirmation"
                 variant="outlined"
                 label="Confirm password"
                 type="password"
                 value={this.state.confirmation}
                 onChange={this.handleInput}
-              />
+                />
             </CardContent>
             <CardActions className={classes.cardActions}>
               <Typography variant="subtitle2">
@@ -163,24 +145,27 @@ class SignupPage extends Component {
                   &nbsp;Sign in
                 </Link>
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!this.state.isValid}
-                onClick={() => this.props.signup(this.state)}
-              >
-                Sign up
-              </Button>
+              <Button variant="contained" color="primary" type="submit">Sign up</Button>
             </CardActions>
+            </form>
           </Card>
         </Grid>
+        <Backdrop open={isFetching || false} style={{ zIndex: 10 }}>
+          <CircularProgress />
+        </Backdrop>
       </Grid>
     );
   }
 }
 
+const mapStateToProps = (state) => ({
+  isFetching: state.isFetching,
+  isSignUpSuccessful: state.isSignUpSuccessful,
+  errors: state.errors,
+})
+
 const mapDispatchToProps = (dispatch) => ({
-  signup: ({ firstname, surname, email, password, ...rest }) => dispatch({type: SIGN_UP, payload: { firstname, surname, email, password }})
+  signup: (formData) => dispatch({type: SIGN_UP, payload: formData})
 });
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(SignupPage));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignupPage));

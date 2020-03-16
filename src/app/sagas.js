@@ -12,14 +12,19 @@ import {
 } from './actions';
 
 // Fetch mock
-const fetch = ({url, data}) => {
-  // return Promise.resolve({ json: () => Promise.reject("Bruh error: server unreachable") });
-  return Promise.resolve({ json: () => Promise.resolve({ authToken: 'BRUHBRUHBRUH' }) });
-  // return Promise.resolve({ json: () => Promise.resolve({ authToken: '', error: 'Wrong password' }) });
-}
+// const fetch = ({url, data}) => {
+//   // return Promise.resolve({ json: () => Promise.reject("Bruh error: server unreachable") });
+//   return Promise.resolve({ json: () => Promise.resolve({ authToken: 'BRUHBRUHBRUH' }) });
+//   // return Promise.resolve({ json: () => Promise.resolve({ authToken: '', error: 'Wrong password' }) });
+// }
 
-const fetchData = async ({url, data}) => {
-  let response = await fetch({ url, data });
+const baseURL = 'https://postify-api.herokuapp.com';
+
+
+const fetchData = async (path, data) => {
+  console.log("Fetching..");
+  let response = await fetch(baseURL+path, { method: 'POST', body: data });
+  console.log(...data.entries())
   return await response.json();
 }
 
@@ -27,13 +32,14 @@ function* signupSaga() {
   while (true) {
     let action = yield take(SIGN_UP);
     // TODO: authentificate
+
     try {
-      let json = yield call(fetchData, { url: 'localhost', data: action.payload })
+      let json = yield call(fetchData, '/auth', action.payload);
       
-      if (json.authToken) {
-        yield put({ type: SIGN_UP_SUCCESS, payload: { authToken: json.authToken } });
+      if (json.status === 'success') {
+        yield put({ type: SIGN_UP_SUCCESS, payload: { ...json.data } });
       } else {
-        yield put({ type: SIGN_UP_ERROR, payload: { error: json.error } });
+        yield put({ type: SIGN_UP_ERROR, payload: { error: json.errors } });
       }
     } catch (error) {
       yield put({ type: SIGN_UP_ERROR, payload: { error } });
@@ -62,7 +68,7 @@ function* signinSaga() {
 function* makePostSaga() {
   while (true) {
     let action = yield take(MAKE_POST);
-
+    
     try {
       let json = yield call(fetchData, { url: 'localhost/posts/', data: action.payload });
       if (json) {
@@ -78,7 +84,7 @@ function* makePostSaga() {
 
 function* mainSaga() {
   yield fork(signupSaga);
-  yield fork(signinSaga);
+  //yield fork(signinSaga);
   yield fork(makePostSaga)
 }
 
