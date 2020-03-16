@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Switch as RouterSwitch, Redirect } from 'react-router-dom';
-import { Container, makeStyles } from '@material-ui/core';
 import Header from './components/Header';
 import MainPage from './components/MainPage';
 import AuthRoute from './components/AuthRoute';
@@ -12,23 +11,21 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
-      <Container maxWidth="md">
-        <RouterSwitch>
-          <Redirect exact from="/" to="/home"/>
-          <AuthRoute path="/home">
-            <MainPage />
-          </AuthRoute>
-          <AuthRoute path="/profile/:id?">
-            profile
-          </AuthRoute>
-          <AuthRoute unauthOnly path="/login">
-            <LoginPage />
-          </AuthRoute>
-          <AuthRoute unauthOnly path="/signup">
-            <SignupPage />
-          </AuthRoute>
-        </RouterSwitch>
-      </Container>
+      <RouterSwitch>
+        <Redirect exact from="/" to="/home"/>
+        <AuthRoute path="/home">
+          <MainPage />
+        </AuthRoute>
+        <AuthRoute path="/profile/:id?">
+          profile
+        </AuthRoute>
+        <AuthRoute unauthOnly path="/login">
+          <LoginPage />
+        </AuthRoute>
+        <AuthRoute unauthOnly path="/signup">
+          <SignupPage />
+        </AuthRoute>
+      </RouterSwitch>
     </BrowserRouter>
   );
 }

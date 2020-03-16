@@ -1,5 +1,16 @@
 import React, {  Component } from 'react';
-import { TextField, Grid, Typography, Button, Link, Card, CardActions, CardContent, CardHeader, withStyles } from '@material-ui/core';
+import {
+  TextField,
+  Grid,
+  Typography,
+  Button,
+  Link,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  withStyles,
+} from '@material-ui/core';
 import { Link as RouteLink } from 'react-router-dom';
 import { SIGN_UP } from '../app/actions'
 import { connect } from 'react-redux';
@@ -69,7 +80,7 @@ class SignupPage extends Component {
 
     return (
       <Grid container justify="center" alignItems="center" style={{ height: '100vh' }}>
-        <Grid item md={6}>
+        <Grid item xs sm={8} md={5} lg={4} xl={3}>
           <Card className={classes.paper}>
             <CardHeader
               title="Sign up"

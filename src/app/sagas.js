@@ -6,6 +6,9 @@ import {
   SIGN_IN,
   SIGN_IN_SUCCESS,
   SIGN_IN_ERROR,
+  MAKE_POST,
+  MAKE_POST_SUCCESS,
+  MAKE_POST_ERROR,
 } from './actions';
 
 // Fetch mock
@@ -43,7 +46,7 @@ function* signinSaga() {
     let action = yield take(SIGN_IN);
     // TODO: authentificate
     try {
-      let json = yield call(fetchData, { url: 'localhost', data: action.payload })
+      let json = yield call(fetchData, { url: 'localhost/auth', data: action.payload });
       
       if (json.authToken) {
         yield put({ type: SIGN_IN_SUCCESS, payload: { authToken: json.authToken } });
@@ -56,9 +59,27 @@ function* signinSaga() {
   }
 }
 
+function* makePostSaga() {
+  while (true) {
+    let action = yield take(MAKE_POST);
+
+    try {
+      let json = yield call(fetchData, { url: 'localhost/posts/', data: action.payload });
+      if (json) {
+        yield put({ type: MAKE_POST_SUCCESS, payload: action.payload });
+      } else {
+        yield put({ type: MAKE_POST_ERROR, payload: { error: json.error } });
+      }
+    } catch (error) {
+      yield put({ type: MAKE_POST_ERROR, payload: { error } });
+    }
+  }
+}
+
 function* mainSaga() {
   yield fork(signupSaga);
   yield fork(signinSaga);
+  yield fork(makePostSaga)
 }
 
 

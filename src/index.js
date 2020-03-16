@@ -6,6 +6,7 @@ import store from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { CssBaseline } from '@material-ui/core';
+import { LOAD_SESSION } from './app/actions'
 
 ReactDOM.render(
   <Provider store={store}>
@@ -19,3 +20,11 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+
+window.onunload = () => {
+  document.cookie = store.getState().authToken;
+}
+
+console.log(document.cookie)
+store.dispatch({ type: LOAD_SESSION, payload: { authToken: document.cookie } })

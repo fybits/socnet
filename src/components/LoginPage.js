@@ -56,7 +56,7 @@ class LoginPage extends Component {
     const { classes } = this.props;
     return (
       <Grid container justify="center" alignItems="center" style={{ height: '100vh' }}>
-        <Grid item md={6}>
+        <Grid item xs sm={8} md={5} lg={4} xl={3}>
           <Card className={classes.paper}>
             <CardHeader
               title="Sign in"
