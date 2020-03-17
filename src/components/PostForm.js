@@ -8,7 +8,6 @@ function PostForm() {
   const [ description, setDescription ] = useState('');
   const dispatch = useDispatch();
   
-
   const theme = useTheme();
   
   return (
@@ -26,13 +25,13 @@ function PostForm() {
         placeholder="Share some stuff with the world..."
         value={description}
         onChange={(event) => setDescription(event.currentTarget.value)}
-        helperText={`${description.length}/140`}
+        helperText={`${description.length}/200`}
         FormHelperTextProps={{ style: { marginLeft: 'auto', marginTop: '-2em', flexBasis: '2em' } }}
       />
       <Button
         variant="contained"
         color="primary"
-        disabled={!(title.trim().length && description.trim().length) || description.length > 140}
+        disabled={!(title.trim().length && description.trim().length) || description.length > 200}
         onClick={(event) => {
           dispatch({ type: MAKE_POST, payload: { title, description } });
           setTitle('');

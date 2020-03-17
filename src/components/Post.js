@@ -9,7 +9,7 @@ function Post(props) {
       <CardActionArea>
         <CardHeader title={props.title} subheader={new Date(props.created_at).toUTCString()}/>
         <CardContent>
-          <Typography variant="body1">{props.description}</Typography>
+          <Typography variant="body1" style={{ whiteSpace: 'pre' }}>{props.description}</Typography>
         </CardContent>
         <CardActions>
           {/* <CommentOutlinedIcon /> <Typography>{props.comments.length}</Typography> */}

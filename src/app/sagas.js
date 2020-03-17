@@ -75,9 +75,15 @@ function* makePostSaga() {
     let action = yield take(MAKE_POST);
     
     try {
-      let json = yield call(fetchData, { url: 'localhost/posts/', data: action.payload });
+      let { json } = yield call(
+        fetchData, '/posts/',
+        {
+          body: JSON.stringify({ post: action.payload }),
+          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},
+        },
+      );
       if (json) {
-        yield put({ type: MAKE_POST_SUCCESS, payload: action.payload });
+        yield put({ type: MAKE_POST_SUCCESS, payload: json });
       } else {
         yield put({ type: MAKE_POST_ERROR, payload: { error: json.error } });
       }
@@ -92,13 +98,11 @@ function* fetchPostsSaga() {
     let action = yield take(FETCH_POSTS);
     
     try {
-      let heads = yield select((state) => state.authHeaders);
-      console.log(heads);
       let { json } = yield call(
         fetchData, '/posts/',
         {
           method: 'GET',
-          headers: heads,
+          headers: yield select((state) => state.authHeaders),
         },
       );
       console.log(json);
@@ -116,7 +120,7 @@ function* fetchPostsSaga() {
 function* mainSaga() {
   yield fork(signupSaga);
   yield fork(signinSaga);
-  //yield fork(makePostSaga)
+  yield fork(makePostSaga)
   yield fork(fetchPostsSaga)
 }
 
