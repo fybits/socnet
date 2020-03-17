@@ -6,7 +6,6 @@ import store from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { CssBaseline } from '@material-ui/core';
-import { LOAD_SESSION } from './app/actions'
 
 ReactDOM.render(
   <Provider store={store}>
@@ -25,11 +24,3 @@ serviceWorker.unregister();
 window.onunload = () => {
   window.localStorage.setItem('authHeaders', JSON.stringify(store.getState().authHeaders));
 }
-
-console.log(document.cookie)
-store.dispatch({
-  type: LOAD_SESSION, 
-  payload: {
-    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders'))
-  }
-})

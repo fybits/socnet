@@ -7,12 +7,12 @@ function Post(props) {
   return (
     <Card style={{ marginTop: 8 }}>
       <CardActionArea>
-        <CardHeader title={props.title} subheader={new Date(props.date).toUTCString()}/>
+        <CardHeader title={props.title} subheader={new Date(props.created_at).toUTCString()}/>
         <CardContent>
           <Typography variant="body1">{props.description}</Typography>
         </CardContent>
         <CardActions>
-          <CommentOutlinedIcon /> <Typography>{props.comments.length}</Typography>
+          {/* <CommentOutlinedIcon /> <Typography>{props.comments.length}</Typography> */}
         </CardActions>
       </CardActionArea>
     </Card>

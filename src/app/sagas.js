@@ -13,7 +13,6 @@ import {
   FETCH_POSTS_SUCCESS,
   FETCH_POSTS_ERROR,
 } from './actions';
-import store from './store';
 
 // Fetch mock
 // const fetch = ({url, data}) => {
@@ -25,13 +24,8 @@ import store from './store';
 const baseURL = 'https://postify-api.herokuapp.com';
 
 
-async function fetchData(path, body='', method = 'POST', headers = {}) {
-  console.log("Fetching..");
-  let response = await fetch(baseURL+path, {
-    method,
-    body,
-    headers,
-  });
+async function fetchData(path, { method = 'POST', ...rest}) {
+  let response = await fetch(baseURL+path, { method, ...rest });
   let json = await response.json();
   return { response, json };
 }
@@ -41,7 +35,7 @@ function* signupSaga() {
     let action = yield take(SIGN_UP);
 
     try {
-      let { json } = yield call(fetchData, '/auth', action.payload);
+      let { json } = yield call(fetchData, '/auth', { body: action.payload });
 
       if (json.status === 'success') {
         yield put({ type: SIGN_UP_SUCCESS, payload: { ...json.data } });
@@ -59,7 +53,7 @@ function* signinSaga() {
     let action = yield take(SIGN_IN);
 
     try {
-      let { response, json } = yield call(fetchData, '/auth/sign_in', action.payload);
+      let { response, json } = yield call(fetchData, '/auth/sign_in', { body: action.payload });
 
       if (response.status === 200) {
         let neededHeaders = ['access-token', 'client', 'uid'];
@@ -98,12 +92,17 @@ function* fetchPostsSaga() {
     let action = yield take(FETCH_POSTS);
     
     try {
-      let json = yield call(
+      let heads = yield select((state) => state.authHeaders);
+      console.log(heads);
+      let { json } = yield call(
         fetchData, '/posts/',
-        'GET',
-        yield select((state) => state.authHeaders),
+        {
+          method: 'GET',
+          headers: heads,
+        },
       );
-      if (json) {
+      console.log(json);
+      if (!json.errors) {
         yield put({ type: FETCH_POSTS_SUCCESS, payload: { posts: json } });
       } else {
         yield put({ type: FETCH_POSTS_ERROR, payload: { error: json.error } });

@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga';
 import { mainSaga } from './sagas';
 import {
@@ -11,7 +11,7 @@ import {
   SIGN_UP,
   SIGN_UP_SUCCESS,
   SIGN_UP_ERROR,
-  FETCH_POSTS,
+  FETCH_POSTS_SUCCESS,
 } from './actions';
 
 const reducer = (prevState, action) => {
@@ -49,20 +49,8 @@ const reducer = (prevState, action) => {
           }
         ]
       }
-    case FETCH_POSTS:
-      return { ...prevState, posts: [
-        {
-          id: 228,
-          title: 'Bruh',
-          description: 'Bruh bruh bruh',
-          date: 1584347727000,
-          comments: [
-            { body: 'bruh' },
-            { body: 'bruh' },
-            { body: 'bruh' }
-          ]
-        }
-      ]}
+    case FETCH_POSTS_SUCCESS:
+      return { ...prevState, posts: action.payload.posts }
     default:
       return { ...prevState };
   }
@@ -81,6 +69,15 @@ const initialState = {
 };
 
 
-export default createStore(reducer, initialState, applyMiddleware(sagaMiddleware));
+const store = createStore(reducer, initialState, applyMiddleware(sagaMiddleware));
 
 sagaMiddleware.run(mainSaga);
+
+store.dispatch({
+  type: LOAD_SESSION, 
+  payload: {
+    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders'))
+  }
+})
+
+export default store;
