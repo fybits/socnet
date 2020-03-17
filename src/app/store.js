@@ -35,7 +35,7 @@ const reducer = (prevState, action) => {
     case LOG_OUT:
       return { ...prevState, authHeaders: null };
     case LOAD_SESSION:
-      return { ...prevState, authHeaders: action.payload.authHeaders };
+      return { ...prevState, ...action.payload };
     case MAKE_POST_SUCCESS:
       return {
         ...prevState,
@@ -76,7 +76,8 @@ sagaMiddleware.run(mainSaga);
 store.dispatch({
   type: LOAD_SESSION, 
   payload: {
-    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders'))
+    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders')),
+    posts: JSON.parse(window.localStorage.getItem('posts')),
   }
 })
 

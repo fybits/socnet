@@ -7,7 +7,7 @@ function Post(props) {
   return (
     <Card style={{ marginTop: 8 }}>
       <CardActionArea>
-        <CardHeader title={props.title} subheader={new Date(props.created_at).toUTCString()}/>
+        <CardHeader title={`${props.user_id} - ${props.title}`} subheader={new Date(props.created_at).toUTCString()}/>
         <CardContent>
           <Typography variant="body1" style={{ whiteSpace: 'pre' }}>{props.description}</Typography>
         </CardContent>
