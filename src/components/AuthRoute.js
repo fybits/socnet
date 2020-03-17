@@ -3,7 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 function AuthRoute(props) {
-    const isAuthentificated = useSelector((state) => Boolean(state.authToken));
+    const isAuthentificated = useSelector((state) => Boolean(state.authHeaders));
     const { path, children, unauthOnly } = props;
 
     let authorize = unauthOnly ^ isAuthentificated;

@@ -61,6 +61,9 @@ class SignupPage extends Component {
 
     return (
       <Grid container justify="center" alignItems="center" style={{ height: '100vh' }}>
+        <Backdrop open={isFetching || false} style={{ zIndex: 10 }}>
+          <CircularProgress />
+        </Backdrop>
         {isSignUpSuccessful ? <Redirect to="/login"/> : null}
         <Grid item xs sm={8} md={5} lg={4} xl={3}>
           <Card className={classes.paper}>
@@ -150,9 +153,6 @@ class SignupPage extends Component {
             </form>
           </Card>
         </Grid>
-        <Backdrop open={isFetching || false} style={{ zIndex: 10 }}>
-          <CircularProgress />
-        </Backdrop>
       </Grid>
     );
   }

@@ -1,4 +1,4 @@
-import { take, put, call, fork } from 'redux-saga/effects'
+import { take, put, call, fork, select } from 'redux-saga/effects'
 import {
   SIGN_UP,
   SIGN_UP_SUCCESS,
@@ -9,7 +9,11 @@ import {
   MAKE_POST,
   MAKE_POST_SUCCESS,
   MAKE_POST_ERROR,
+  FETCH_POSTS,
+  FETCH_POSTS_SUCCESS,
+  FETCH_POSTS_ERROR,
 } from './actions';
+import store from './store';
 
 // Fetch mock
 // const fetch = ({url, data}) => {
@@ -21,21 +25,24 @@ import {
 const baseURL = 'https://postify-api.herokuapp.com';
 
 
-const fetchData = async (path, data) => {
+async function fetchData(path, body='', method = 'POST', headers = {}) {
   console.log("Fetching..");
-  let response = await fetch(baseURL+path, { method: 'POST', body: data });
-  console.log(...data.entries())
-  return await response.json();
+  let response = await fetch(baseURL+path, {
+    method,
+    body,
+    headers,
+  });
+  let json = await response.json();
+  return { response, json };
 }
 
 function* signupSaga() {
   while (true) {
     let action = yield take(SIGN_UP);
-    // TODO: authentificate
 
     try {
-      let json = yield call(fetchData, '/auth', action.payload);
-      
+      let { json } = yield call(fetchData, '/auth', action.payload);
+
       if (json.status === 'success') {
         yield put({ type: SIGN_UP_SUCCESS, payload: { ...json.data } });
       } else {
@@ -50,14 +57,18 @@ function* signupSaga() {
 function* signinSaga() {
   while (true) {
     let action = yield take(SIGN_IN);
-    // TODO: authentificate
+
     try {
-      let json = yield call(fetchData, { url: 'localhost/auth', data: action.payload });
-      
-      if (json.authToken) {
-        yield put({ type: SIGN_IN_SUCCESS, payload: { authToken: json.authToken } });
+      let { response, json } = yield call(fetchData, '/auth/sign_in', action.payload);
+
+      if (response.status === 200) {
+        let neededHeaders = ['access-token', 'client', 'uid'];
+        const headers = Object.fromEntries(
+            [...response.headers].filter((value, key) => neededHeaders.indexOf(value[0]) !== -1)
+        );
+        yield put({ type: SIGN_IN_SUCCESS, payload: { headers, data: json.data } });
       } else {
-        yield put({ type: SIGN_IN_ERROR, payload: { error: json.error } });
+        yield put({ type: SIGN_IN_ERROR, payload: { error: json.errors } });
       }
     } catch (error) {
       yield put({ type: SIGN_IN_ERROR, payload: { error } });
@@ -82,10 +93,32 @@ function* makePostSaga() {
   }
 }
 
+function* fetchPostsSaga() {
+  while (true) {
+    let action = yield take(FETCH_POSTS);
+    
+    try {
+      let json = yield call(
+        fetchData, '/posts/',
+        'GET',
+        yield select((state) => state.authHeaders),
+      );
+      if (json) {
+        yield put({ type: FETCH_POSTS_SUCCESS, payload: { posts: json } });
+      } else {
+        yield put({ type: FETCH_POSTS_ERROR, payload: { error: json.error } });
+      }
+    } catch (error) {
+      yield put({ type: FETCH_POSTS_ERROR, payload: { error } });
+    }
+  }
+}
+
 function* mainSaga() {
   yield fork(signupSaga);
-  //yield fork(signinSaga);
-  yield fork(makePostSaga)
+  yield fork(signinSaga);
+  //yield fork(makePostSaga)
+  yield fork(fetchPostsSaga)
 }
 
 

@@ -1,5 +1,18 @@
 import React, { Component } from 'react';
-import { TextField, Grid, Typography, Button, Link, Card, CardActions, CardContent, CardHeader, withStyles } from '@material-ui/core';
+import {
+  TextField,
+  Grid,
+  Typography,
+  Button,
+  Link,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  withStyles,
+  Backdrop,
+  CircularProgress,
+} from '@material-ui/core';
 import { Link as RouteLink } from 'react-router-dom';
 import { SIGN_IN } from '../app/actions';
 import { connect } from 'react-redux';
@@ -23,24 +36,7 @@ class LoginPage extends Component {
     this.state = {
       email: '',
       password: '',
-      isValidEmail: false,
-      isValid: false,
     }
-    console.log(this.props.signup)
-  }
-  
-
-  validate = () => {
-    this.setState((prevState) => {
-      let isValidEmail = /\S+@\S+\.\S+/g.test(prevState.email);
-      let isValid = isValidEmail &&
-                    Boolean(prevState.password);
-      return {
-        ...prevState,
-        isValidEmail,
-        isValid,
-      }
-    })
   }
 
   handleInput = (event) => {
@@ -49,68 +45,84 @@ class LoginPage extends Component {
       ...prevState,
       [event.target.name]: event.target.value.trim()
     }))
-    this.validate();
   }
   
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    this.props.signin(formData);
+  }
+
   render () {
-    const { classes } = this.props;
+    const { classes, errors, isFetching, isSignUpSuccessful } = this.props;
     return (
       <Grid container justify="center" alignItems="center" style={{ height: '100vh' }}>
+        <Backdrop open={isFetching || false} style={{ zIndex: 10 }}>
+          <CircularProgress />
+        </Backdrop>
         <Grid item xs sm={8} md={5} lg={4} xl={3}>
           <Card className={classes.paper}>
-            <CardHeader
-              title="Sign in"
-              titleTypographyProps={{ color: 'primary', variant: 'h4' }}
-              subheader="enter your e-mail and password"
-            />
-            <CardContent>
-              <TextField
-                className={classes.textField}
-                error={!this.state.isValidEmail}
-                helperText={!this.state.isValidEmail && "Not valid e-mail address"}
-                fullWidth
-                name="email"
-                variant="outlined"
-                label="E-mail"
-                value={this.state.email}
-                onChange={this.handleInput}
+            <form onSubmit={this.handleSubmit}>
+              <CardHeader
+                title="Sign in"
+                titleTypographyProps={{ color: 'primary', variant: 'h4' }}
+                subheader="enter your e-mail and password"
               />
-              <br />
-              <TextField
-                className={classes.textField}
-                fullWidth
-                name="password"
-                variant="outlined"
-                label="Password"
-                type="password"
-                value={this.state.password}
-                onChange={this.handleInput}
-              />
-            </CardContent>
-            <CardActions className={classes.cardActions}>
-              <Typography variant="subtitle2">
-                Not registered yet?
-                <Link
-                  href="#"
-                  component=
-                  {
-                    React.forwardRef((props, ref) => {
-                      return <RouteLink to="/signup" ref={ref} {...props}/>
-                    })
-                  }
-                  >
-                  &nbsp;Sign up
-                </Link>
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!this.state.isValid}
-                onClick={() => this.props.signin(this.state)}
-              >
-                Log in
-              </Button>
-            </CardActions>
+              <CardContent>
+                <TextField
+                  className={classes.textField}
+                  fullWidth
+                  name="email"
+                  variant="outlined"
+                  label="E-mail"
+                  value={this.state.email}
+                  onChange={this.handleInput}
+                />
+                <br />
+                <TextField
+                  className={classes.textField}
+                  fullWidth
+                  name="password"
+                  variant="outlined"
+                  label="Password"
+                  type="password"
+                  value={this.state.password}
+                  onChange={this.handleInput}
+                />
+                {
+                  errors && (
+                    isSignUpSuccessful
+                    ?
+                    <Typography variant="caption" style={{ color: '#007E33' }}>{errors[0]}</Typography>
+                    :
+                    <Typography variant="caption" color="error">{errors[0]}</Typography>
+                  )
+                }
+              </CardContent>
+              <CardActions className={classes.cardActions}>
+                <Typography variant="subtitle2">
+                  Not registered yet?
+                  <Link
+                    href="#"
+                    component=
+                    {
+                      React.forwardRef((props, ref) => {
+                        return <RouteLink to="/signup" ref={ref} {...props}/>
+                      })
+                    }
+                    >
+                    &nbsp;Sign up
+                  </Link>
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Log in
+                </Button>
+              </CardActions>
+            </form>
           </Card>
         </Grid>
       </Grid>
@@ -118,9 +130,14 @@ class LoginPage extends Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  isFetching: state.isFetching,
+  isSignUpSuccessful: state.isSignUpSuccessful,
+  errors: state.errors,
+})
 
 const mapDispatchToProps = (dispatch) => ({
-  signin: ({ email, password, ...rest }) => dispatch({type: SIGN_IN, payload: { email, password }})
+  signin: (formData) => dispatch({type: SIGN_IN, payload: formData})
 });
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(LoginPage));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(LoginPage));

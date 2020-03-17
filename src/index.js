@@ -23,8 +23,13 @@ serviceWorker.unregister();
 
 
 window.onunload = () => {
-  document.cookie = store.getState().authToken;
+  window.localStorage.setItem('authHeaders', JSON.stringify(store.getState().authHeaders));
 }
 
 console.log(document.cookie)
-store.dispatch({ type: LOAD_SESSION, payload: { authToken: document.cookie } })
+store.dispatch({
+  type: LOAD_SESSION, 
+  payload: {
+    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders'))
+  }
+})

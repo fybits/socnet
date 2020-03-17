@@ -10,7 +10,7 @@ function PostForm() {
   
 
   const theme = useTheme();
-  console.log(theme.breakpoints.width('md'))
+  
   return (
     <Paper style={{ padding: theme.spacing(2), display: 'flex', flexDirection: 'column' }}>
       <TextField
