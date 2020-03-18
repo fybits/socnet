@@ -15,6 +15,7 @@ import {
   LOAD_SESSION,
   LOAD_COMMENTS_SYNC,
   FETCH_COMMENTS,
+  SEND_COMMENT_SUCCESS,
 } from './actions';
 
 const reducer = (prevState, action) => {
@@ -72,6 +73,8 @@ const reducer = (prevState, action) => {
           }
         }
       };
+    case SEND_COMMENT_SUCCESS:
+      return { ...prevState, comments: [...prevState.comments, action.payload] }
     default:
       return { ...prevState };
   }

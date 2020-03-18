@@ -4,11 +4,11 @@ import Post from './Post';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ScrollToTopFab from './ScrollToTopFab';
-import { Grid, Box } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { LOAD_COMMENTS, FETCH_COMMENTS } from '../app/actions';
 import CommentsBlock from './CommentsBlock';
 
-function PostPage(props) {
+function PostPage() {
   const { id } = useParams();
 
   const authHeaders = useSelector((state) => state.authHeaders);
@@ -26,18 +26,19 @@ function PostPage(props) {
     )
     dispatch({ type: FETCH_COMMENTS });
     dispatch({ type: LOAD_COMMENTS, payload: { id: Number(id), type: 'post' } });
+
   }, []);
   
   console.log('Comments', comments);
   return (
     <Grid
       justify="center"
-      container style={{ marginTop: 70 }}
+      container style={{ marginTop: 70, marginBottom: '50vh'}}
     >
       <ScrollToTopFab />
-      <Grid item xs sm={8} md={5} xl={4} >
+      <Grid item xs sm={8} md={5} xl={4}>
           <Post {...post}/>
-          <CommentsBlock comments={comments}/>
+          <CommentsBlock post id={id} comments={comments}/>
       </Grid>
     </Grid>
   );

@@ -15,6 +15,9 @@ import {
   FETCH_COMMENTS,
   FETCH_COMMENTS_SUCCESS,
   FETCH_COMMENTS_ERROR,
+  SEND_COMMENT,
+  SEND_COMMENT_SUCCESS,
+  SEND_COMMENT_ERROR,
   LOAD_COMMENTS,
   LOAD_COMMENTS_SYNC,
 } from './actions';
@@ -98,6 +101,36 @@ function* makePostSaga() {
   }
 }
 
+function* makeCommentSaga() {
+  while (true) {
+    let action = yield take(SEND_COMMENT);
+    
+    try {
+      let { json } = yield call(
+        fetchData, '/comments/',
+        {
+          body: JSON.stringify(action.payload),
+          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},
+        },
+      );
+      if (json) {
+        yield put({ type: SEND_COMMENT_SUCCESS, payload: json });
+        yield put({
+          type: LOAD_COMMENTS,
+          payload: {
+            id: json.commentable_id,
+            type: json.commentable_type.toLowerCase(),
+          }
+        });
+      } else {
+        yield put({ type: SEND_COMMENT_ERROR, payload: { error: json.error } });
+      }
+    } catch (error) {
+      yield put({ type: SEND_COMMENT_ERROR, payload: { error } });
+    }
+  }
+}
+
 function* fetchPostsSaga() {
   while (true) {
     let action = yield take(FETCH_POSTS);
@@ -159,6 +192,7 @@ function* mainSaga() {
   yield fork(signupSaga);
   yield fork(signinSaga);
   yield fork(makePostSaga);
+  yield fork(makeCommentSaga);
   yield fork(fetchPostsSaga);
   yield fork(fetchCommentsSaga);
   yield fork(loadComments);

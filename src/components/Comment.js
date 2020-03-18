@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, ListItem, ListItemText, Typography, useTheme } from '@material-ui/core';
+import { ListItem, ListItemText, Typography, useTheme } from '@material-ui/core';
 import CommentsBlock from './CommentsBlock';
 import { useSelector, useDispatch } from 'react-redux';
 import { LOAD_COMMENTS } from '../app/actions';
@@ -15,12 +15,12 @@ function Comment(props) {
   }, []);
 
   return (
-    <ListItem style={{ borderLeft: `2px solid ${useTheme().palette.primary.main}`}} button>
+    <ListItem style={{ borderLeft: `2px solid ${useTheme().palette.primary.main}`}} button disableRipple>
       <ListItemText>
         <Typography>{user_id}</Typography>
         <Typography variant="caption" style={{ color: 'gray' }}>{new Date(created_at).toUTCString()}</Typography>
         <Typography paragraph>{message}</Typography>
-        {(comments) ? <CommentsBlock comments={comments}/> : null}
+        {(comments) ? <CommentsBlock id={id} comments={comments}/> : null}
       </ListItemText>
     </ListItem>
   )
