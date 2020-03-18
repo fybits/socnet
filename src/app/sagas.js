@@ -1,4 +1,4 @@
-import { take, put, call, fork, select } from 'redux-saga/effects'
+import { take, put, call, fork, select, actionChannel } from 'redux-saga/effects'
 import {
   SIGN_UP,
   SIGN_UP_SUCCESS,
@@ -12,7 +12,13 @@ import {
   FETCH_POSTS,
   FETCH_POSTS_SUCCESS,
   FETCH_POSTS_ERROR,
+  FETCH_COMMENTS,
+  FETCH_COMMENTS_SUCCESS,
+  FETCH_COMMENTS_ERROR,
+  LOAD_COMMENTS,
+  LOAD_COMMENTS_SYNC,
 } from './actions';
+import { baseURL } from './config';
 
 // Fetch mock
 // const fetch = ({url, data}) => {
@@ -21,7 +27,6 @@ import {
 //   // return Promise.resolve({ json: () => Promise.resolve({ authToken: '', error: 'Wrong password' }) });
 // }
 
-const baseURL = 'https://postify-api.herokuapp.com';
 
 
 async function fetchData(path, { method = 'POST', ...rest}) {
@@ -105,7 +110,7 @@ function* fetchPostsSaga() {
           headers: yield select((state) => state.authHeaders),
         },
       );
-      console.log(json);
+      
       if (!json.errors) {
         yield put({ type: FETCH_POSTS_SUCCESS, payload: { posts: json } });
       } else {
@@ -117,12 +122,46 @@ function* fetchPostsSaga() {
   }
 }
 
+function* fetchCommentsSaga() {
+  while (true) {
+    let action = yield take(FETCH_COMMENTS);
+    
+    try {
+      let { json } = yield call(
+        fetchData, '/comments/',
+        {
+          method: 'GET',
+          headers: yield select((state) => state.authHeaders),
+        },
+      );
+      
+      if (!json.errors) {
+        yield put({ type: FETCH_COMMENTS_SUCCESS, payload: { comments: json } });
+      } else {
+        yield put({ type: FETCH_COMMENTS_ERROR, payload: { error: json.error } });
+      }
+    } catch (error) {
+      yield put({ type: FETCH_COMMENTS_ERROR, payload: { error } });
+    }
+  }
+}
+
+function* loadComments() {
+  const queue = yield actionChannel(LOAD_COMMENTS)
+  yield take(FETCH_COMMENTS_SUCCESS);
+  while (true) {
+    const action = yield take(queue);
+    yield put({ ...action, type: LOAD_COMMENTS_SYNC })
+  }
+}
+
 function* mainSaga() {
   yield fork(signupSaga);
   yield fork(signinSaga);
-  yield fork(makePostSaga)
-  yield fork(fetchPostsSaga)
+  yield fork(makePostSaga);
+  yield fork(fetchPostsSaga);
+  yield fork(fetchCommentsSaga);
+  yield fork(loadComments);
 }
-
 
 export { mainSaga };

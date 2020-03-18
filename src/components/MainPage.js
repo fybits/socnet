@@ -7,8 +7,7 @@ import { FETCH_POSTS } from '../app/actions';
 import ScrollToTopFab from './ScrollToTopFab';
 
 function MainPage() {
-  const posts = [...useSelector((state) => state.posts)];
-    //.slice(-10)
+  const posts = [...useSelector((state) => state.posts)].slice(-10);
   posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const dispatch = useDispatch();
 
@@ -27,7 +26,7 @@ function MainPage() {
         <PostForm />
         {
           posts.map(({ id, ...rest }) => (
-            <Post key={id} {...rest}/>
+            <Post key={id} id={id} {...rest}/>
           ))
         }
       </Grid>

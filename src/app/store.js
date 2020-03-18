@@ -2,16 +2,22 @@ import { createStore, applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga';
 import { mainSaga } from './sagas';
 import {
-  SIGN_IN_SUCCESS,
-  SIGN_IN_ERROR,
-  SIGN_IN,
-  LOG_OUT,
-  LOAD_SESSION,
-  MAKE_POST_SUCCESS,
   SIGN_UP,
   SIGN_UP_SUCCESS,
   SIGN_UP_ERROR,
+  SIGN_IN,
+  SIGN_IN_SUCCESS,
+  SIGN_IN_ERROR,
+  MAKE_POST_SUCCESS,
+  MAKE_POST_ERROR,
   FETCH_POSTS_SUCCESS,
+  FETCH_POSTS_ERROR,
+  FETCH_COMMENTS_SUCCESS,
+  FETCH_COMMENTS_ERROR,
+  LOG_OUT,
+  LOAD_SESSION,
+  LOAD_COMMENTS_SYNC,
+  FETCH_COMMENTS,
 } from './actions';
 
 const reducer = (prevState, action) => {
@@ -19,6 +25,7 @@ const reducer = (prevState, action) => {
   switch (action.type) {
     case SIGN_UP:
     case SIGN_IN:
+    case FETCH_COMMENTS:
       return { ...prevState, isFetching: true };
     case SIGN_UP_SUCCESS:
       return {
@@ -29,6 +36,7 @@ const reducer = (prevState, action) => {
       };
     case SIGN_UP_ERROR:
     case SIGN_IN_ERROR:
+    case FETCH_COMMENTS_ERROR:
       return { ...prevState, isFetching: false, errors: action.payload.error };
     case SIGN_IN_SUCCESS:
       return { ...prevState, isFetching: false, authHeaders: action.payload.headers };
@@ -50,7 +58,23 @@ const reducer = (prevState, action) => {
         ]
       }
     case FETCH_POSTS_SUCCESS:
-      return { ...prevState, posts: action.payload.posts }
+    case FETCH_COMMENTS_SUCCESS:
+      return { ...prevState, isFetching: false, ...action.payload}
+    case LOAD_COMMENTS_SYNC:
+      let filteredComments = prevState.comments.filter(({ commentable_type, commentable_id }) => (
+        commentable_type.toLowerCase() === action.payload.type && commentable_id === action.payload.id
+      ))
+      console.log('Filtered: ', filteredComments);
+      return {
+        ...prevState,
+        cachedComments: {
+          ...prevState.cachedComments,
+          [action.payload.type]: {
+            ...prevState.cachedComments[action.payload.type],
+            [action.payload.id]: filteredComments
+          }
+        }
+      };
     default:
       return { ...prevState };
   }
@@ -60,11 +84,11 @@ const sagaMiddleware = createSagaMiddleware();
 
 const initialState = {
   authHeaders: {},
-  posts: [
-    { id: 228, title: 'Bruh', description: 'Bruh bruh bruh', date: 1584347727000, comments: [{ body: 'bruh' }, { body: 'bruh' }, { body: 'bruh' }] },
-    { id: 1488, title: 'Ne bruh', description: 'Ne bruh bruh bruh', date: 1584347228000, comments: [{ body: 'bruh' }, { body: 'bruh' }] },
-    { id: 42069, title: 'Bruh bruhen bruh', description: 'Ne bruh bruh bruh', date: 1584347228000, comments: [{ body: 'bruh' }, { body: 'bruh' }] },
-  ],
+  posts: [],
+  cachedComments: {
+    post: {},
+    comment: {}
+  },
   errors: {},
 };
 
