@@ -4,17 +4,17 @@ import Post from './Post';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ScrollToTopFab from './ScrollToTopFab';
-import { Grid } from '@material-ui/core';
-import { LOAD_COMMENTS, FETCH_COMMENTS } from '../app/actions';
+import { Grid, Box, CircularProgress } from '@material-ui/core';
+import { FETCH_COMMENTS } from '../app/actions';
 import CommentsBlock from './CommentsBlock';
 
 function PostPage() {
   const { id } = useParams();
 
+  const isFetching = useSelector((state) => state.isFetching);
   const authHeaders = useSelector((state) => state.authHeaders);
-  const comments = useSelector((state) => state.cachedComments.post[id]);
   const dispatch = useDispatch();
-
+  
   const [post, setPost] = useState({});
 
   useEffect(() => {
@@ -25,11 +25,9 @@ function PostPage() {
       }
     )
     dispatch({ type: FETCH_COMMENTS });
-    dispatch({ type: LOAD_COMMENTS, payload: { id: Number(id), type: 'post' } });
 
   }, []);
   
-  console.log('Comments', comments);
   return (
     <Grid
       justify="center"
@@ -38,7 +36,15 @@ function PostPage() {
       <ScrollToTopFab />
       <Grid item xs sm={8} md={5} xl={4}>
           <Post {...post}/>
-          <CommentsBlock post id={id} comments={comments}/>
+          {
+            isFetching
+            ?
+            <Box display="flex" marginTop={2} justifyContent="center">
+              <CircularProgress  />
+            </Box>
+            :
+            <CommentsBlock id={id} type="post"/>
+          }
       </Grid>
     </Grid>
   );

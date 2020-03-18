@@ -62,7 +62,7 @@ const reducer = (prevState, action) => {
       let filteredComments = prevState.comments.filter(({ commentable_type, commentable_id }) => (
         commentable_type.toLowerCase() === action.payload.type && commentable_id === action.payload.id
       ))
-      console.log('Filtered: ', filteredComments);
+      filteredComments.sort((a, b) => new Date(a.created_at)-new Date(b.created_at));
       return {
         ...prevState,
         cachedComments: {

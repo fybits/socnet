@@ -4,11 +4,11 @@ import { useDispatch } from 'react-redux';
 import { SEND_COMMENT } from '../app/actions';
 
 function CommentForm(props) {
-  const { id } = props;
+  const { id, type } = props;
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
 
-  let type = (props.post) ? 'Post' : 'Comment';
+  let commentableType = type.charAt(0).toUpperCase() + type.substring(1);
 
   const handleSend = (event) => {
     event.preventDefault();
@@ -17,7 +17,7 @@ function CommentForm(props) {
           type: SEND_COMMENT, payload: {
           message,
           commentable_id: id,
-          commentable_type: type 
+          commentable_type: commentableType 
         }
       });
       setMessage('');
@@ -25,16 +25,16 @@ function CommentForm(props) {
   }
   
   return (
-    <Box padding={1}>
-      <form onSubmit={handleSend}>
+    <form onSubmit={handleSend}>
+      <Box display="flex" padding={1}>
         <TextField
+          style={{ flexGrow: 1 }}
           value={message}
           onChange={(event) => setMessage(event.currentTarget.value)}
         />
         <Button type="submit">Send</Button>
-      </form>
-    </Box>
-    
+      </Box>
+    </form>
   )
 }
 
