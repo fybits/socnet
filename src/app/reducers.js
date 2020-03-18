@@ -49,8 +49,8 @@ const reducer = (prevState, action) => {
           ...prevState.posts,
           {
             ...action.payload,
-            id: Date.now(),
-            date: Date.now(),
+            id: action.payload.id,
+            date: new Date(action.payload.created_at),
             comments: []
           }
         ]
