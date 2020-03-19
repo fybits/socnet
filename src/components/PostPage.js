@@ -24,8 +24,13 @@ function PostPage() {
         setPost(json);
       }
     )
-    dispatch({ type: FETCH_COMMENTS });
-
+    dispatch({ type: FETCH_COMMENTS , payload: { background: false } })
+    const interval = setInterval(() => (
+      dispatch({ type: FETCH_COMMENTS , payload: { background: true } })
+    ), 15000);
+    return () => {
+      clearInterval(interval);
+    }
   }, []);
   
   return (

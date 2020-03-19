@@ -16,15 +16,18 @@ import {
   LOAD_COMMENTS_SYNC,
   FETCH_COMMENTS,
   SEND_COMMENT_SUCCESS,
+  EDIT_POST_SUCCESS,
+  EDIT_COMMENT_SUCCESS,
 } from './actions';
 
 const reducer = (prevState, action) => {
   console.log(action)
-  switch (action.type) {
+  const { type, payload } = action;
+  switch (type) {
     case SIGN_UP:
     case SIGN_IN:
     case FETCH_COMMENTS:
-      return { ...prevState, isFetching: true };
+      return { ...prevState, isFetching: !payload.background };
     case SIGN_UP_SUCCESS:
       return {
         ...prevState,
@@ -35,46 +38,52 @@ const reducer = (prevState, action) => {
     case SIGN_UP_ERROR:
     case SIGN_IN_ERROR:
     case FETCH_COMMENTS_ERROR:
-      return { ...prevState, isFetching: false, errors: action.payload.error };
+      return { ...prevState, isFetching: false, errors: payload.error };
     case SIGN_IN_SUCCESS:
-      return { ...prevState, isFetching: false, authHeaders: action.payload.headers };
+      return { ...prevState, isFetching: false, authHeaders: payload.headers, userData: payload.data };
     case LOG_OUT:
       return { ...prevState, authHeaders: null };
     case LOAD_SESSION:
-      return { ...prevState, ...action.payload };
+      return { ...prevState, ...payload };
     case MAKE_POST_SUCCESS:
       return {
         ...prevState,
         posts: [
           ...prevState.posts,
           {
-            ...action.payload,
-            id: action.payload.id,
-            date: new Date(action.payload.created_at),
+            ...payload,
+            id: payload.id,
+            date: new Date(payload.created_at),
             comments: []
           }
         ]
       }
     case FETCH_POSTS_SUCCESS:
     case FETCH_COMMENTS_SUCCESS:
-      return { ...prevState, isFetching: false, ...action.payload}
+      return { ...prevState, isFetching: false, ...payload}
     case LOAD_COMMENTS_SYNC:
       let filteredComments = prevState.comments.filter(({ commentable_type, commentable_id }) => (
-        commentable_type.toLowerCase() === action.payload.type && commentable_id === action.payload.id
+        commentable_type.toLowerCase() === payload.type && commentable_id === payload.id
       ))
       filteredComments.sort((a, b) => new Date(a.created_at)-new Date(b.created_at));
       return {
         ...prevState,
         cachedComments: {
           ...prevState.cachedComments,
-          [action.payload.type]: {
-            ...prevState.cachedComments[action.payload.type],
-            [action.payload.id]: filteredComments
+          [payload.type]: {
+            ...prevState.cachedComments[payload.type],
+            [payload.id]: filteredComments
           }
         }
       };
     case SEND_COMMENT_SUCCESS:
-      return { ...prevState, comments: [...prevState.comments, action.payload] }
+    case EDIT_COMMENT_SUCCESS:
+      return { ...prevState, comments: [...prevState.comments, payload] };
+    case EDIT_POST_SUCCESS:
+      return { 
+        ...prevState,
+        posts: [ ...prevState.posts.filter((post) => post.id !== payload.id), payload ]
+      };
     default:
       return { ...prevState };
   }

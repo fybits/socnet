@@ -7,7 +7,7 @@ import { FETCH_POSTS } from '../app/actions';
 import ScrollToTopFab from './ScrollToTopFab';
 
 function MainPage() {
-  const posts = [...useSelector((state) => state.posts)].slice(-10);
+  const posts = [...useSelector((state) => state.posts)];
   posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const dispatch = useDispatch();
 

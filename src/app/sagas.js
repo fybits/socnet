@@ -18,8 +18,14 @@ import {
   SEND_COMMENT,
   SEND_COMMENT_SUCCESS,
   SEND_COMMENT_ERROR,
+  EDIT_POST,
+  EDIT_POST_SUCCESS,
+  EDIT_POST_ERROR,
   LOAD_COMMENTS,
   LOAD_COMMENTS_SYNC,
+  EDIT_COMMENT,
+  EDIT_COMMENT_SUCCESS,
+  EDIT_COMMENT_ERROR,
 } from './actions';
 import { baseURL } from './config';
 
@@ -91,7 +97,7 @@ function* makePostSaga() {
         },
       );
       if (json) {
-        yield put({ type: MAKE_POST_SUCCESS, payload: json });
+        yield put({ type: MAKE_POST, payload: json });
       } else {
         yield put({ type: MAKE_POST_ERROR, payload: { error: json.error } });
       }
@@ -133,7 +139,7 @@ function* makeCommentSaga() {
 
 function* fetchPostsSaga() {
   while (true) {
-    let action = yield take(FETCH_POSTS);
+    yield take(FETCH_POSTS);
     
     try {
       let { json } = yield call(
@@ -157,7 +163,7 @@ function* fetchPostsSaga() {
 
 function* fetchCommentsSaga() {
   while (true) {
-    let action = yield take(FETCH_COMMENTS);
+    const action = yield take(FETCH_COMMENTS);
     
     try {
       let { json } = yield call(
@@ -169,7 +175,12 @@ function* fetchCommentsSaga() {
       );
       
       if (!json.errors) {
-        yield put({ type: FETCH_COMMENTS_SUCCESS, payload: { comments: json } });
+        yield put({
+          type: FETCH_COMMENTS_SUCCESS,
+          payload: {
+            comments: json,
+          }
+        });
       } else {
         yield put({ type: FETCH_COMMENTS_ERROR, payload: { error: json.error } });
       }
@@ -179,12 +190,77 @@ function* fetchCommentsSaga() {
   }
 }
 
-function* loadComments() {
+function* loadCommentsSaga() {
   const queue = yield actionChannel(LOAD_COMMENTS)
   yield take(FETCH_COMMENTS_SUCCESS);
   while (true) {
     const action = yield take(queue);
     yield put({ ...action, type: LOAD_COMMENTS_SYNC })
+  }
+}
+
+function* editPostSaga() {
+  while (true) {
+    const action = yield take(EDIT_POST);
+    
+    try {
+      let { response, json } = yield call(
+        fetchData, `/posts/${action.payload.id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            post: {
+              title: action.payload.title,
+              description: action.payload.description,
+            }
+          }),
+          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},  
+        },
+      );
+      
+      if (json && response.status === 200) {
+        yield put({ type: EDIT_POST_SUCCESS, payload: json });
+        yield put({
+          type: LOAD_COMMENTS,
+          payload: {
+            id: json.commentable_id,
+            type: json.commentable_type.toLowerCase(),
+          }
+        });
+      } else {
+        yield put({ type: EDIT_POST_ERROR, payload: { json } });
+      }
+    } catch (error) {
+      yield put({ type: EDIT_POST_ERROR, payload: { error } });
+    }
+  }
+}
+
+
+function* editCommentSaga() {
+  while (true) {
+    const action = yield take(EDIT_COMMENT);
+    
+    try {
+      let { response, json } = yield call(
+        fetchData, `/comments/${action.payload.id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            message: action.payload.message,
+          }),
+          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},  
+        },
+      );
+      console.log(response, json);
+      if (response.status === 200) {
+        yield put({ type: EDIT_COMMENT_SUCCESS, payload: json });
+      } else {
+        yield put({ type: EDIT_COMMENT_ERROR, payload: { json } });
+      }
+    } catch (error) {
+      yield put({ type: EDIT_COMMENT_ERROR, payload: { error } });
+    }
   }
 }
 
@@ -195,7 +271,9 @@ function* mainSaga() {
   yield fork(makeCommentSaga);
   yield fork(fetchPostsSaga);
   yield fork(fetchCommentsSaga);
-  yield fork(loadComments);
+  yield fork(loadCommentsSaga);
+  yield fork(editPostSaga);
+  yield fork(editCommentSaga);
 }
 
 export { mainSaga };

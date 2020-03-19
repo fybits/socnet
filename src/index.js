@@ -23,5 +23,6 @@ serviceWorker.unregister();
 
 window.onunload = () => {
   window.localStorage.setItem('authHeaders', JSON.stringify(store.getState().authHeaders));
+  window.localStorage.setItem('userData', JSON.stringify(store.getState().userData));
   window.localStorage.setItem('posts', JSON.stringify(store.getState().posts.slice(-20)));
 }

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Button, Paper, TextField, useTheme } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { MAKE_POST } from '../app/actions';
+import { EDIT_POST } from '../app/actions';
 
-function PostForm() {
+function PostForm({ id, onClose }) {
   const [ title, setTitle ] = useState('');
   const [ description, setDescription ] = useState('');
   const dispatch = useDispatch();
@@ -33,7 +34,12 @@ function PostForm() {
         color="primary"
         disabled={!(title.trim().length && description.trim().length) || description.length > 200}
         onClick={(event) => {
-          dispatch({ type: MAKE_POST, payload: { title, description } });
+          if (id) {
+            dispatch({ type: EDIT_POST, payload: { id,  title, description }});
+            onClose();
+          } else {
+            dispatch({ type: MAKE_POST, payload: { title, description } });
+          }
           setTitle('');
           setDescription('');
         }}
