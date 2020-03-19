@@ -26,6 +26,12 @@ import {
   EDIT_COMMENT,
   EDIT_COMMENT_SUCCESS,
   EDIT_COMMENT_ERROR,
+  DELETE_POST,
+  DELETE_POST_SUCCESS,
+  DELETE_POST_ERROR,
+  DELETE_COMMENT,
+  DELETE_COMMENT_SUCCESS,
+  DELETE_COMMENT_ERROR,
 } from './actions';
 import { baseURL } from './config';
 
@@ -38,9 +44,9 @@ import { baseURL } from './config';
 
 
 
-async function fetchData(path, { method = 'POST', ...rest}) {
+async function fetchData(path, { method = 'POST', ...rest}, returnJson=true) {
   let response = await fetch(baseURL+path, { method, ...rest });
-  let json = await response.json();
+  let json = returnJson && await response.json();
   return { response, json };
 }
 
@@ -264,6 +270,65 @@ function* editCommentSaga() {
   }
 }
 
+function* deleteCommentSaga() {
+  while (true) {
+    const action = yield take(DELETE_COMMENT);
+    
+    try {
+      let { response } = yield call(
+        fetchData, `/comments/${action.payload.id}`,
+        {
+          method: 'DELETE',
+          headers: yield select((state) => state.authHeaders),  
+        },
+        false
+      );
+      
+      if (response.status === 204) {
+        yield put({ type: DELETE_COMMENT_SUCCESS, payload: { id: action.payload.id } });
+      } else {
+        yield put({ type: DELETE_COMMENT_ERROR });
+      }
+    } catch (error) {
+      yield put({ type: DELETE_COMMENT_ERROR, payload: { error } });
+    } finally {
+      yield put({
+        type: LOAD_COMMENTS,
+        payload: {
+          id: action.payload.commentable_id,
+          type: action.payload.commentable_type.toLowerCase(),
+        }
+      });
+    }
+  }
+}
+
+function* deletePostSaga() {
+  while (true) {
+    const action = yield take(DELETE_POST);
+    
+    try {
+      let { response } = yield call(
+        fetchData, `/posts/${action.payload.id}`,
+        {
+          method: 'DELETE',
+          headers: yield select((state) => state.authHeaders),  
+        },
+        false
+      );
+      
+      if (response.status === 204) {
+        yield put({ type: DELETE_POST_SUCCESS, payload: { id: action.payload.id } });
+      } else {
+        yield put({ type: DELETE_POST_ERROR });
+      }
+    } catch (error) {
+      yield put({ type: DELETE_POST_ERROR, payload: { error } });
+    }
+  }
+}
+
+
 function* mainSaga() {
   yield fork(signupSaga);
   yield fork(signinSaga);
@@ -274,6 +339,8 @@ function* mainSaga() {
   yield fork(loadCommentsSaga);
   yield fork(editPostSaga);
   yield fork(editCommentSaga);
+  yield fork(deleteCommentSaga);
+  yield fork(deletePostSaga);
 }
 
 export { mainSaga };

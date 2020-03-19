@@ -6,6 +6,7 @@ import AuthRoute from './components/AuthRoute';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import PostPage from './components/PostPage';
+import ProfilePage from './components/ProfilePage';
 
 function App() {
   
@@ -19,6 +20,9 @@ function App() {
         </AuthRoute>
         <AuthRoute path="/posts/:id/">
           <PostPage />
+        </AuthRoute>
+        <AuthRoute path="/profiles/:id/">
+          <ProfilePage />
         </AuthRoute>
         <AuthRoute unauthOnly path="/login">
           <LoginPage />

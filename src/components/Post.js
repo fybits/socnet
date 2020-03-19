@@ -12,13 +12,15 @@ import {
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PostEditDialog from './PostEditDialog';
+import { DELETE_POST } from '../app/actions';
 
 function Post({ id, user_id, title, description, created_at }) {
   const history = useHistory();
   const user = useSelector((state) => state.userData.id)
   const [showEditModal, setShowEditModal] = useState(false);
+  const dispatch = useDispatch();
 
   return (
     <Card style={{ marginTop: 8 }}>
@@ -38,7 +40,9 @@ function Post({ id, user_id, title, description, created_at }) {
                     }} size="small">
                     <EditIcon />
                   </IconButton>
-                  <IconButton size="small">
+                  <IconButton size="small" onClick={(event) => {
+                    dispatch({ type: DELETE_POST, payload: { id }});
+                  }}>
                     <DeleteIcon />
                   </IconButton>
                 </CardActions>

@@ -18,6 +18,8 @@ import {
   SEND_COMMENT_SUCCESS,
   EDIT_POST_SUCCESS,
   EDIT_COMMENT_SUCCESS,
+  DELETE_COMMENT_SUCCESS,
+  DELETE_POST_SUCCESS,
 } from './actions';
 
 const reducer = (prevState, action) => {
@@ -84,6 +86,16 @@ const reducer = (prevState, action) => {
         ...prevState,
         posts: [ ...prevState.posts.filter((post) => post.id !== payload.id), payload ]
       };
+    case DELETE_COMMENT_SUCCESS:
+      return {
+        ...prevState,
+        comments: prevState.comments.filter((comment) => comment.id !== action.payload.id)
+      };
+    case DELETE_POST_SUCCESS:
+      return {
+        ...prevState,
+        posts: prevState.posts.filter((post) => post.id !== payload.id),
+      }
     default:
       return { ...prevState };
   }
