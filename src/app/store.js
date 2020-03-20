@@ -24,9 +24,9 @@ sagaMiddleware.run(mainSaga);
 store.dispatch({
   type: LOAD_SESSION, 
   payload: {
-    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders')),
-    userData: JSON.parse(window.localStorage.getItem('userData')),
-    posts: JSON.parse(window.localStorage.getItem('posts')),
+    authHeaders: JSON.parse(window.localStorage.getItem('authHeaders')) || null,
+    userData: JSON.parse(window.localStorage.getItem('userData')) || {},
+    posts: JSON.parse(window.localStorage.getItem('posts')) || [],
   }
 })
 
