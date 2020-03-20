@@ -1,21 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Grid } from '@material-ui/core';
+import { Grid, Paper, Typography, Box } from '@material-ui/core';
 import ScrollToTopFab from './ScrollToTopFab';
 import Post from './Post';
 import { FETCH_POSTS } from '../app/actions';
+import { baseURL } from '../app/config';
 
 function ProfilePage() {
   const { id } = useParams();
-  const myId = useSelector((state) => state.userData.id);
-  let user_id = id || myId;
+  const userData = useSelector((state) => state.userData);
+  const authUser = !id;
+  let user_id = id || userData.id;
   
   const posts = useSelector((state) => state.posts)
     .filter((post) => post.user_id === +user_id);
   posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const dispatch = useDispatch();
-  console.log({user_id, id, myId, posts});
+
   useEffect(() => {
     console.log('[Fetching posts from useEffect]')
     dispatch({ type: FETCH_POSTS });
@@ -28,6 +30,24 @@ function ProfilePage() {
     >
       <ScrollToTopFab />
       <Grid item xs sm={8} md={5} xl={4} >
+        <Paper>
+          <Box padding={2}>
+            <Typography variant="h3">
+              User ID: {user_id}
+            </Typography>
+            <Typography variant="body1">
+              {
+                authUser &&
+                <React.Fragment>
+                  First name: {userData.firs_name}<br />
+                  Last name: {userData.last_name}<br />
+                  E-mail: {userData.email}<br />
+                </React.Fragment>
+              }
+              Posts: {posts.length}
+            </Typography>
+          </Box>
+        </Paper>
         {
           posts.map(({ id, ...rest }) => (
             <Post key={id} id={id} {...rest}/>
