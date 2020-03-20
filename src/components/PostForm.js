@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 import { MAKE_POST } from '../app/actions';
 import { EDIT_POST } from '../app/actions';
 
-function PostForm({ id, onClose }) {
-  const [ title, setTitle ] = useState('');
-  const [ description, setDescription ] = useState('');
+function PostForm({ id, onClose, defaultTitle, defaultDescription }) {
+  const [ title, setTitle ] = useState(defaultTitle || '');
+  const [ description, setDescription ] = useState(defaultDescription || '');
   const dispatch = useDispatch();
   
   const theme = useTheme();

@@ -21,7 +21,7 @@ function Comment(props) {
 
   const dispatch = useDispatch();
 
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(null);
   return (
     <ListItem
       style={{ paddingRight: 0 }}>
@@ -33,8 +33,8 @@ function Comment(props) {
             user === user_id 
             && (
               <Box>
-                <Popover open={Boolean(showEditModal)} onClose={() => setShowEditModal(false)} anchorEl={showEditModal}>
-                  <CommentForm edit id={id} type={commentable_type} onClose={() => setShowEditModal(false)}/>
+                <Popover open={Boolean(showEditModal)} onClose={() => setShowEditModal(null)} anchorEl={showEditModal}>
+                  <CommentForm defaultValue={message} edit id={id} type={commentable_type} onClose={() => setShowEditModal(null)}/>
                 </Popover>
                 <IconButton onClick={(event) => {
                     setShowEditModal(event.currentTarget);

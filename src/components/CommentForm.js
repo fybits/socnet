@@ -5,7 +5,7 @@ import { SEND_COMMENT, EDIT_COMMENT } from '../app/actions';
 
 function CommentForm(props) {
   const { id, type, edit } = props;
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(props.defaultValue || '');
   const dispatch = useDispatch();
 
   let commentableType = type && (type.charAt(0).toUpperCase() + type.substring(1));

@@ -8,6 +8,7 @@ import {
   IconButton,
   Box,
   Button,
+  Dialog,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -17,6 +18,7 @@ import PostEditDialog from './PostEditDialog';
 import { DELETE_POST } from '../app/actions';
 import CommentIcon from '@material-ui/icons/Comment';
 import RouteLink from './RouteLink';
+import PostForm from './PostForm';
 
 function Post({ id, user_id, title, description, created_at }) {
   const history = useHistory();
@@ -26,7 +28,14 @@ function Post({ id, user_id, title, description, created_at }) {
 
   return (
     <Card style={{ marginTop: 8 }}>
-        <PostEditDialog id={id} open={showEditModal} onClose={() => setShowEditModal(false)}/>
+        <Dialog fullWidth open={showEditModal} onClose={() => setShowEditModal(false)}>
+          <PostForm
+            defaultTitle={title}
+            defaultDescription={description}
+            id={id}
+            onClose={() => setShowEditModal(false)}
+          />
+        </Dialog>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <CardHeader
             title={(
