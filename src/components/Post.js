@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import {
   Card,
   CardHeader,
@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PostEditDialog from './PostEditDialog';
 import { DELETE_POST } from '../app/actions';
 import CommentIcon from '@material-ui/icons/Comment';
+import RouteLink from './RouteLink';
 
 function Post({ id, user_id, title, description, created_at }) {
   const history = useHistory();
@@ -28,7 +29,12 @@ function Post({ id, user_id, title, description, created_at }) {
         <PostEditDialog id={id} open={showEditModal} onClose={() => setShowEditModal(false)}/>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <CardHeader
-            title={`${user_id} - ${title}`}
+            title={(
+              <Fragment>
+                <RouteLink to={`/profiles/${user_id}`}>{`${user_id} `}</RouteLink>
+                 - title
+              </Fragment>
+            )}
             subheader={new Date(created_at).toUTCString()}
           />
           {
