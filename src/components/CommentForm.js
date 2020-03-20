@@ -39,6 +39,7 @@ function CommentForm(props) {
     <form onSubmit={handleSend}>
       <Box display="flex" padding={1}>
         <TextField
+          autoFocus
           style={{ flexGrow: 1 }}
           value={message}
           onChange={(event) => setMessage(event.currentTarget.value)}
