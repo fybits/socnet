@@ -28,10 +28,9 @@ function Header() {
           {
             authHeaders &&
             <Box marginLeft="auto" display="flex" alignItems="center">
-              <Avatar onClick={() => {
-                history.push('/profiles');
-              }
-              }/>
+              <IconButton size="small" onClick={() =>  history.push('/profiles')}>
+                <Avatar />
+              </IconButton>
               <IconButton
                 style={{ color: 'white' }}
                 onClick={() => dispatch({ type: LOG_OUT})}

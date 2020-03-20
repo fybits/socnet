@@ -24,7 +24,7 @@ function Comment(props) {
   const [showEditModal, setShowEditModal] = useState(null);
   return (
     <ListItem
-      style={{ paddingRight: 0 }}>
+      style={{ paddingRight: 0, paddingLeft: 8 }}>
       <ListItemText>
         <RouteLink to={`/profiles/${user_id}`}>{`${user_id} `}</RouteLink>
         <Typography variant="caption" style={{ color: 'gray' }}>{new Date(created_at).toUTCString()}</Typography>

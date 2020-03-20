@@ -1,8 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Grid, Link } from '@material-ui/core';
 
-function ErrorPage() {
+function ErrorPage(props) {
   const history = useHistory();
   return (
     <Grid
@@ -10,7 +10,8 @@ function ErrorPage() {
       container style={{ marginTop: 70 }}
     >
       <Grid item xs sm={8} md={5} xl={4} >
-        <Typography variant="h1">{history.location.state.error}</Typography>
+        <Typography variant="h1">{props.error || history.location.state || 'Unknown error'}</Typography>
+        <Link href="#" onClick={() => history.goBack()}>go back</Link>
       </Grid>
     </Grid>
   )

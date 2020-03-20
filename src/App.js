@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Switch as RouterSwitch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch as RouterSwitch, Redirect, Route } from 'react-router-dom';
 import Header from './components/Header';
 import MainPage from './components/MainPage';
 import AuthRoute from './components/AuthRoute';
@@ -34,6 +34,9 @@ function App() {
         <AuthRoute unauthOnly path="/signup">
           <SignupPage />
         </AuthRoute>
+        <Route path="*">
+          <ErrorPage error="404 Not Found"/>
+        </Route>
       </RouterSwitch>
     </BrowserRouter>
   );

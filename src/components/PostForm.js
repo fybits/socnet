@@ -26,13 +26,13 @@ function PostForm({ id, onClose, defaultTitle, defaultDescription }) {
         placeholder="Share some stuff with the world..."
         value={description}
         onChange={(event) => setDescription(event.currentTarget.value)}
-        helperText={`${description.length}/200`}
+        helperText={`${description.length}/400`}
         FormHelperTextProps={{ style: { marginLeft: 'auto', marginTop: '-2em', flexBasis: '2em' } }}
       />
       <Button
         variant="contained"
         color="primary"
-        disabled={!(title.trim().length && description.trim().length) || description.length > 200}
+        disabled={!(title.trim().length && description.trim().length) || description.length > 400}
         onClick={(event) => {
           if (id) {
             dispatch({ type: EDIT_POST, payload: { id,  title, description }});

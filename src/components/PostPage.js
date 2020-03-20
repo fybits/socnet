@@ -22,9 +22,7 @@ function PostPage() {
       .then((response) => {
         console.log(response.status)
         if (response.status !== 200) {
-          history.replace('/error', {
-            error: `${response.status} ${response.statusText}`
-          });
+          history.replace('/error', `${response.status} ${response.statusText}`);
           return Promise.reject(`${response.status} ${response.statusText}`);
         }
         return response.json()

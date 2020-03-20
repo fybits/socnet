@@ -5,8 +5,9 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 const useStyles = makeStyles({
   fab: {
     position: 'fixed',
-    bottom: 16,
-    right: 16,
+    bottom: 32,
+    right: 32,
+    zIndex: 100000,
   }
 });
 

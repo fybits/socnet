@@ -33,15 +33,6 @@ import {
 } from './actions';
 import { baseURL } from './config';
 
-// Fetch mock
-// const fetch = ({url, data}) => {
-//   // return Promise.resolve({ json: () => Promise.reject("Bruh error: server unreachable") });
-//   return Promise.resolve({ json: () => Promise.resolve({ authToken: 'BRUHBRUHBRUH' }) });
-//   // return Promise.resolve({ json: () => Promise.resolve({ authToken: '', error: 'Wrong password' }) });
-// }
-
-
-
 async function fetchData(path, { method = 'POST', ...rest}, returnJson=true) {
   let response = await fetch(baseURL+path, { method, ...rest });
   let json = returnJson && await response.json();
@@ -295,7 +286,6 @@ function* deletePostSaga() {
     }
   }
 }
-
 
 function* mainSaga() {
   yield fork(signupSaga);
