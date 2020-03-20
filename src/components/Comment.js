@@ -26,10 +26,7 @@ function Comment(props) {
   const [showEditModal, setShowEditModal] = useState(false);
   return (
     <ListItem
-      style={{ borderLeft: `2px solid ${useTheme().palette.primary.main}`, paddingRight: 0 }}
-      button
-      disableRipple
-    >
+      style={{ paddingRight: 0 }}>
       <ListItemText>
         <Link
           href="#"
@@ -40,7 +37,7 @@ function Comment(props) {
             })
           }
           >
-          {user_id}
+          {`${user_id} `}
         </Link>
         <Typography variant="caption" style={{ color: 'gray' }}>{new Date(created_at).toUTCString()}</Typography>
         <Typography paragraph>{message}</Typography>

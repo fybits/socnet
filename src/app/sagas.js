@@ -21,8 +21,6 @@ import {
   EDIT_POST,
   EDIT_POST_SUCCESS,
   EDIT_POST_ERROR,
-  LOAD_COMMENTS,
-  LOAD_COMMENTS_SYNC,
   EDIT_COMMENT,
   EDIT_COMMENT_SUCCESS,
   EDIT_COMMENT_ERROR,
@@ -127,13 +125,6 @@ function* makeCommentSaga() {
       );
       if (json) {
         yield put({ type: SEND_COMMENT_SUCCESS, payload: json });
-        yield put({
-          type: LOAD_COMMENTS,
-          payload: {
-            id: json.commentable_id,
-            type: json.commentable_type.toLowerCase(),
-          }
-        });
       } else {
         yield put({ type: SEND_COMMENT_ERROR, payload: { error: json.error } });
       }
@@ -196,15 +187,6 @@ function* fetchCommentsSaga() {
   }
 }
 
-function* loadCommentsSaga() {
-  const queue = yield actionChannel(LOAD_COMMENTS)
-  yield take(FETCH_COMMENTS_SUCCESS);
-  while (true) {
-    const action = yield take(queue);
-    yield put({ ...action, type: LOAD_COMMENTS_SYNC })
-  }
-}
-
 function* editPostSaga() {
   while (true) {
     const action = yield take(EDIT_POST);
@@ -226,13 +208,6 @@ function* editPostSaga() {
       
       if (json && response.status === 200) {
         yield put({ type: EDIT_POST_SUCCESS, payload: json });
-        yield put({
-          type: LOAD_COMMENTS,
-          payload: {
-            id: json.commentable_id,
-            type: json.commentable_type.toLowerCase(),
-          }
-        });
       } else {
         yield put({ type: EDIT_POST_ERROR, payload: { json } });
       }
@@ -258,7 +233,7 @@ function* editCommentSaga() {
           headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},  
         },
       );
-      console.log(response, json);
+      
       if (response.status === 200) {
         yield put({ type: EDIT_COMMENT_SUCCESS, payload: json });
       } else {
@@ -285,20 +260,13 @@ function* deleteCommentSaga() {
       );
       
       if (response.status === 204) {
-        yield put({ type: DELETE_COMMENT_SUCCESS, payload: { id: action.payload.id } });
+        yield put({ type: DELETE_COMMENT_SUCCESS, payload: action.payload });
       } else {
         yield put({ type: DELETE_COMMENT_ERROR });
       }
     } catch (error) {
       yield put({ type: DELETE_COMMENT_ERROR, payload: { error } });
     } finally {
-      yield put({
-        type: LOAD_COMMENTS,
-        payload: {
-          id: action.payload.commentable_id,
-          type: action.payload.commentable_type.toLowerCase(),
-        }
-      });
     }
   }
 }
@@ -336,7 +304,6 @@ function* mainSaga() {
   yield fork(makeCommentSaga);
   yield fork(fetchPostsSaga);
   yield fork(fetchCommentsSaga);
-  yield fork(loadCommentsSaga);
   yield fork(editPostSaga);
   yield fork(editCommentSaga);
   yield fork(deleteCommentSaga);

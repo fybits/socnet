@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { baseURL } from '../app/config';
 import Post from './Post';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ScrollToTopFab from './ScrollToTopFab';
 import { Grid, Box, CircularProgress } from '@material-ui/core';
@@ -14,16 +14,24 @@ function PostPage() {
   const isFetching = useSelector((state) => state.isFetching);
   const authHeaders = useSelector((state) => state.authHeaders);
   const dispatch = useDispatch();
-  
+  const history = useHistory();
   const [post, setPost] = useState({});
 
   useEffect(() => {
     fetch(`${baseURL}/posts/${id}/`, { headers: authHeaders })
-      .then((response) => response.json())
-      .then((json) => { 
-        setPost(json);
-      }
-    )
+      .then((response) => {
+        console.log(response.status)
+        if (response.status !== 200) {
+          history.replace('/error', {
+            error: `${response.status} ${response.statusText}`
+          });
+          return Promise.reject(`${response.status} ${response.statusText}`);
+        }
+        return response.json()
+      })
+      .then((json) => setPost(json))
+      .catch((error) => { console.error(error); });
+
     dispatch({ type: FETCH_COMMENTS , payload: { background: false } })
     const interval = setInterval(() => (
       dispatch({ type: FETCH_COMMENTS , payload: { background: true } })

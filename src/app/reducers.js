@@ -13,7 +13,6 @@ import {
   FETCH_COMMENTS_ERROR,
   LOG_OUT,
   LOAD_SESSION,
-  LOAD_COMMENTS_SYNC,
   FETCH_COMMENTS,
   SEND_COMMENT_SUCCESS,
   EDIT_POST_SUCCESS,
@@ -61,41 +60,45 @@ const reducer = (prevState, action) => {
         ]
       }
     case FETCH_POSTS_SUCCESS:
-    case FETCH_COMMENTS_SUCCESS:
       return { ...prevState, isFetching: false, ...payload}
-    case LOAD_COMMENTS_SYNC:
-      let filteredComments = prevState.comments.filter(({ commentable_type, commentable_id }) => (
-        commentable_type.toLowerCase() === payload.type && commentable_id === payload.id
-      ))
-      filteredComments.sort((a, b) => new Date(a.created_at)-new Date(b.created_at));
-      return {
-        ...prevState,
+    case FETCH_COMMENTS_SUCCESS:
+      let { comments } = payload;
+      let cachedComments = { post: {}, comment: {} };
+      comments.sort((a, b) => new Date(a.created_at)-new Date(b.created_at))
+        .forEach(comment => {
+        let { commentable_id, commentable_type } = comment;
+        if (!cachedComments[commentable_type.toLowerCase()][commentable_id]){
+          cachedComments[commentable_type.toLowerCase()][commentable_id] = [];
+        }
+        cachedComments[commentable_type.toLowerCase()][commentable_id].push(comment);
+      });
+      return { ...prevState, isFetching: false, cachedComments: cachedComments };
+    case SEND_COMMENT_SUCCESS:
+    case EDIT_COMMENT_SUCCESS:
+    case DELETE_COMMENT_SUCCESS:
+      let type = payload.commentable_type.toLowerCase();
+      let newCommentable = [...(prevState.cachedComments[type][payload.commentable_id] || [])];
+      if (action.type !== SEND_COMMENT_SUCCESS) {
+        newCommentable = newCommentable.filter((comment) => comment.id !== payload.id);
+      }
+      if (action.type !== DELETE_COMMENT_SUCCESS) {
+        newCommentable.push(payload);
+      }
+      return { ...prevState,
         cachedComments: {
           ...prevState.cachedComments,
-          [payload.type]: {
-            ...prevState.cachedComments[payload.type],
-            [payload.id]: filteredComments
+          [type]: {
+            ...prevState.cachedComments[type],
+            [payload.commentable_id]: newCommentable,
           }
         }
       };
-    case SEND_COMMENT_SUCCESS:
-    case EDIT_COMMENT_SUCCESS:
-      return { ...prevState, comments: [...prevState.comments, payload] };
+      
     case EDIT_POST_SUCCESS:
       return { 
         ...prevState,
         posts: [ ...prevState.posts.filter((post) => post.id !== payload.id), payload ]
       };
-    case DELETE_COMMENT_SUCCESS:
-      return {
-        ...prevState,
-        comments: prevState.comments.filter((comment) => comment.id !== action.payload.id)
-      };
-    case DELETE_POST_SUCCESS:
-      return {
-        ...prevState,
-        posts: prevState.posts.filter((post) => post.id !== payload.id),
-      }
     default:
       return { ...prevState };
   }

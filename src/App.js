@@ -7,6 +7,7 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import PostPage from './components/PostPage';
 import ProfilePage from './components/ProfilePage';
+import ErrorPage from './components/ErrorPage';
 
 function App() {
   
@@ -23,6 +24,9 @@ function App() {
         </AuthRoute>
         <AuthRoute path="/profiles/:id/">
           <ProfilePage />
+        </AuthRoute>
+        <AuthRoute path="/error">
+          <ErrorPage />
         </AuthRoute>
         <AuthRoute unauthOnly path="/login">
           <LoginPage />
