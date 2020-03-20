@@ -8,14 +8,14 @@ import { FETCH_POSTS } from '../app/actions';
 
 function ProfilePage() {
   const { id } = useParams();
-  const myId = useSelector((state) => state.userData.user_id);
-  let user_id = id && myId;
+  const myId = useSelector((state) => state.userData.id);
+  let user_id = id || myId;
   
   const posts = useSelector((state) => state.posts)
     .filter((post) => post.user_id === +user_id);
   posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const dispatch = useDispatch();
-  console.log(posts);
+  console.log({user_id, id, myId, posts});
   useEffect(() => {
     console.log('[Fetching posts from useEffect]')
     dispatch({ type: FETCH_POSTS });

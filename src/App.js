@@ -22,7 +22,7 @@ function App() {
         <AuthRoute path="/posts/:id/">
           <PostPage />
         </AuthRoute>
-        <AuthRoute path="/profiles/:id/">
+        <AuthRoute path="/profiles/:id?/">
           <ProfilePage />
         </AuthRoute>
         <AuthRoute path="/error">

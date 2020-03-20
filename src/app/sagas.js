@@ -1,4 +1,4 @@
-import { take, put, call, fork, select, actionChannel } from 'redux-saga/effects'
+import { take, put, call, fork, select } from 'redux-saga/effects'
 import {
   SIGN_UP,
   SIGN_UP_SUCCESS,
@@ -101,7 +101,7 @@ function* makePostSaga() {
         },
       );
       if (json) {
-        yield put({ type: MAKE_POST, payload: json });
+        yield put({ type: MAKE_POST_SUCCESS, payload: json });
       } else {
         yield put({ type: MAKE_POST_ERROR, payload: { error: json.error } });
       }

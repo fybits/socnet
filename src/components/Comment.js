@@ -3,11 +3,9 @@ import {
   ListItem,
   ListItemText,
   Typography,
-  useTheme,
   IconButton,
   Box,
   Popover,
-  Link,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -15,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import CommentsBlock from './CommentsBlock';
 import CommentForm from './CommentForm';
 import { DELETE_COMMENT } from '../app/actions';
-import { Link as RouteLink } from 'react-router-dom';
+import RouteLink from './RouteLink';
 
 function Comment(props) {
   const { id, message, user_id, commentable_id, commentable_type, created_at } = props;
@@ -28,17 +26,7 @@ function Comment(props) {
     <ListItem
       style={{ paddingRight: 0 }}>
       <ListItemText>
-        <Link
-          href="#"
-          component=
-          {
-            React.forwardRef((props, ref) => {
-              return <RouteLink to={`/profiles/${user_id}`} ref={ref} {...props}/>
-            })
-          }
-          >
-          {`${user_id} `}
-        </Link>
+        <RouteLink to={`/profiles/${user_id}`}>{`${user_id} `}</RouteLink>
         <Typography variant="caption" style={{ color: 'gray' }}>{new Date(created_at).toUTCString()}</Typography>
         <Typography paragraph>{message}</Typography>
         {

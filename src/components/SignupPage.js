@@ -4,7 +4,6 @@ import {
   Grid,
   Typography,
   Button,
-  Link,
   Card,
   CardActions,
   CardContent,
@@ -13,9 +12,10 @@ import {
   Backdrop,
   CircularProgress,
 } from '@material-ui/core';
-import { Link as RouteLink, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { SIGN_UP } from '../app/actions'
 import { connect } from 'react-redux';
+import RouteLink from './RouteLink';
 
 const styles = {
   paper: {
@@ -136,17 +136,7 @@ class SignupPage extends Component {
             <CardActions className={classes.cardActions}>
               <Typography variant="subtitle2">
                 Already registered?
-                <Link
-                  href="#"
-                  component=
-                  {
-                    React.forwardRef((props, ref) => {
-                      return <RouteLink to="/login" ref={ref} {...props}/>
-                    })
-                  }
-                  >
-                  &nbsp;Sign in
-                </Link>
+                <RouteLink to="/login">&nbsp;Sign in</RouteLink>
               </Typography>
               <Button variant="contained" color="primary" type="submit">Sign up</Button>
             </CardActions>

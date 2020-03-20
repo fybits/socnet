@@ -6,9 +6,7 @@ import {
   SIGN_IN_SUCCESS,
   SIGN_IN_ERROR,
   MAKE_POST_SUCCESS,
-  MAKE_POST_ERROR,
   FETCH_POSTS_SUCCESS,
-  FETCH_POSTS_ERROR,
   FETCH_COMMENTS_SUCCESS,
   FETCH_COMMENTS_ERROR,
   LOG_OUT,
@@ -93,12 +91,16 @@ const reducer = (prevState, action) => {
           }
         }
       };
-      
     case EDIT_POST_SUCCESS:
       return { 
         ...prevState,
-        posts: [ ...prevState.posts.filter((post) => post.id !== payload.id), payload ]
+        posts: [...prevState.posts.filter((post) => post.id !== payload.id), payload]
       };
+    case DELETE_POST_SUCCESS:
+      return {
+        ...prevState,
+        posts: [...prevState.posts.filter((post) => post.id !== payload.id)]
+      }
     default:
       return { ...prevState };
   }

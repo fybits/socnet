@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { SEND_COMMENT, EDIT_COMMENT } from '../app/actions';
 
 function CommentForm(props) {
-  const { id, type, edit, dense } = props;
+  const { id, type, edit } = props;
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
 

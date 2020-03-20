@@ -4,10 +4,10 @@ import {
   CardHeader,
   CardContent,
   CardActions,
-  CardActionArea,
   Typography,
   IconButton,
   Box,
+  Button,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -15,6 +15,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useSelector, useDispatch } from 'react-redux';
 import PostEditDialog from './PostEditDialog';
 import { DELETE_POST } from '../app/actions';
+import CommentIcon from '@material-ui/icons/Comment';
 
 function Post({ id, user_id, title, description, created_at }) {
   const history = useHistory();
@@ -50,12 +51,13 @@ function Post({ id, user_id, title, description, created_at }) {
             )
           }
         </Box>
-        <CardActionArea onClick={() => history.push(`/posts/${id}`)}>
-          <CardContent>
-            <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>{description}</Typography>
-          </CardContent>
-        </CardActionArea>
+        <CardContent>
+          <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>{description}</Typography>
+        </CardContent>
         <CardActions>
+          <Button startIcon={<CommentIcon />} onClick={() => history.push(`/posts/${id}`)}>
+            Comments
+          </Button>
         </CardActions>
     </Card>
   );
