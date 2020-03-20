@@ -14,7 +14,6 @@ import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { useSelector, useDispatch } from 'react-redux';
-import PostEditDialog from './PostEditDialog';
 import { DELETE_POST } from '../app/actions';
 import CommentIcon from '@material-ui/icons/Comment';
 import RouteLink from './RouteLink';

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Grid, Paper, Typography, Box } from '@material-ui/core';
 import ScrollToTopFab from './ScrollToTopFab';
 import Post from './Post';
 import { FETCH_POSTS } from '../app/actions';
-import { baseURL } from '../app/config';
 
 function ProfilePage() {
   const { id } = useParams();
@@ -19,8 +18,8 @@ function ProfilePage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('[Fetching posts from useEffect]')
     dispatch({ type: FETCH_POSTS });
+    // eslint-disable-next-line
   }, [])
 
   return (

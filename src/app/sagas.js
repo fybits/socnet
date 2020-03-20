@@ -160,7 +160,7 @@ function* fetchPostsSaga() {
 
 function* fetchCommentsSaga() {
   while (true) {
-    const action = yield take(FETCH_COMMENTS);
+    yield take(FETCH_COMMENTS);
     
     try {
       let { json } = yield call(
