@@ -19,9 +19,9 @@ import CommentIcon from '@material-ui/icons/Comment';
 import RouteLink from './RouteLink';
 import PostForm from './PostForm';
 
-function Post({ id, user_id, title, description, created_at }) {
+function Post({ id, user_id, user, title, description, created_at }) {
   const history = useHistory();
-  const user = useSelector((state) => state.userData.id)
+  const currentUser = useSelector((state) => state.userData.id)
   const [showEditModal, setShowEditModal] = useState(false);
   const dispatch = useDispatch();
 
@@ -39,14 +39,14 @@ function Post({ id, user_id, title, description, created_at }) {
           <CardHeader
             title={(
               <Fragment>
-                <RouteLink to={`/profiles/${user_id}`}>{`${user_id} `}</RouteLink>
+                <RouteLink to={`/profiles/${user_id}`}>{`${user?.first_name} ${user?.last_name} `}</RouteLink>
                  - {title}
               </Fragment>
             )}
             subheader={new Date(created_at).toUTCString()}
           />
           {
-            user === user_id 
+            currentUser === user_id
             && (
               <Box>
                 <CardActions>

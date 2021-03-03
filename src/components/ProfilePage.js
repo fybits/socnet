@@ -11,7 +11,7 @@ function ProfilePage() {
   const userData = useSelector((state) => state.userData);
   const authUser = !id;
   let user_id = id || userData.id;
-  
+
   const posts = useSelector((state) => state.posts)
     .filter((post) => post.user_id === +user_id);
   posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -38,7 +38,7 @@ function ProfilePage() {
               {
                 authUser &&
                 <React.Fragment>
-                  First name: {userData.firs_name}<br />
+                  First name: {userData.first_name}<br />
                   Last name: {userData.last_name}<br />
                   E-mail: {userData.email}<br />
                 </React.Fragment>

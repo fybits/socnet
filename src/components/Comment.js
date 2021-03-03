@@ -16,8 +16,8 @@ import { DELETE_COMMENT } from '../app/actions';
 import RouteLink from './RouteLink';
 
 function Comment(props) {
-  const { id, message, user_id, commentable_id, commentable_type, created_at } = props;
-  const user = useSelector((state) => state.userData.id)
+  const { id, message, user_id, user, commentable_id, commentable_type, created_at } = props;
+  const authUser = useSelector((state) => state.userData.id)
 
   const dispatch = useDispatch();
 
@@ -26,11 +26,11 @@ function Comment(props) {
     <ListItem
       style={{ paddingRight: 0, paddingLeft: 8 }}>
       <ListItemText>
-        <RouteLink to={`/profiles/${user_id}`}>{`${user_id} `}</RouteLink>
+        <RouteLink to={`/profiles/${user_id}`}>{`${user.first_name} ${user.last_name}  `}</RouteLink>
         <Typography variant="caption" style={{ color: 'gray' }}>{new Date(created_at).toUTCString()}</Typography>
         <Typography paragraph>{message}</Typography>
         {
-            user === user_id 
+            authUser === user_id
             && (
               <Box>
                 <Popover open={Boolean(showEditModal)} onClose={() => setShowEditModal(null)} anchorEl={showEditModal}>
@@ -49,7 +49,7 @@ function Comment(props) {
                       payload: {
                         id,
                         commentable_id,
-                        commentable_type 
+                        commentable_type
                       }
                     });
                   }}

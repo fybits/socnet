@@ -49,7 +49,7 @@ class SignupPage extends Component {
       [event.target.name]: event.target.value.trim()
     }))
   }
-  
+
   handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -78,7 +78,7 @@ class SignupPage extends Component {
                 required
                 className={classes.textField}
                 fullWidth
-                name="first_  name"
+                name="first_name"
                 variant="outlined"
                 label="First name"
                 value={this.state.firstname}
