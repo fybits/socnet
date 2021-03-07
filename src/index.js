@@ -2,16 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import store from './app/store';
-import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { CssBaseline } from '@material-ui/core';
+import { UserContextProvider } from './app/UserContext';
 
 ReactDOM.render(
-  <Provider store={store}>
+  <UserContextProvider>
     <CssBaseline />
     <App />
-  </Provider>,
+  </UserContextProvider>,
   document.getElementById('root')
 );
 
@@ -21,8 +20,7 @@ ReactDOM.render(
 serviceWorker.unregister();
 
 
-window.onunload = () => {
-  window.localStorage.setItem('authHeaders', JSON.stringify(store.getState().authHeaders));
-  window.localStorage.setItem('userData', JSON.stringify(store.getState().userData));
-  window.localStorage.setItem('posts', JSON.stringify(store.getState().posts.slice(-20)));
-}
+// window.onunload = () => {
+//   window.localStorage.setItem('authHeader', JSON.stringify(store.getState().authHeader));
+//   window.localStorage.setItem('userData', JSON.stringify(store.getState().userData));
+// }

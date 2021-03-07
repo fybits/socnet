@@ -82,13 +82,13 @@ function* signinSaga() {
 function* makePostSaga() {
   while (true) {
     let action = yield take(MAKE_POST);
-    
+
     try {
       let { json } = yield call(
         fetchData, '/posts/',
         {
           body: JSON.stringify({ post: action.payload }),
-          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},
+          headers: { ...yield select((state) => state.authHeader), 'content-type': 'application/json'},
         },
       );
       if (json) {
@@ -105,13 +105,13 @@ function* makePostSaga() {
 function* makeCommentSaga() {
   while (true) {
     let action = yield take(SEND_COMMENT);
-    
+
     try {
       let { json } = yield call(
         fetchData, '/comments/',
         {
           body: JSON.stringify(action.payload),
-          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},
+          headers: { ...yield select((state) => state.authHeader), 'content-type': 'application/json'},
         },
       );
       if (json) {
@@ -128,16 +128,16 @@ function* makeCommentSaga() {
 function* fetchPostsSaga() {
   while (true) {
     yield take(FETCH_POSTS);
-    
+
     try {
       let { json } = yield call(
         fetchData, '/posts/',
         {
           method: 'GET',
-          headers: yield select((state) => state.authHeaders),
+          headers: yield select((state) => state.authHeader),
         },
       );
-      
+
       if (!json.errors) {
         yield put({ type: FETCH_POSTS_SUCCESS, payload: { posts: json } });
       } else {
@@ -152,16 +152,16 @@ function* fetchPostsSaga() {
 function* fetchCommentsSaga() {
   while (true) {
     yield take(FETCH_COMMENTS);
-    
+
     try {
       let { json } = yield call(
         fetchData, '/comments/',
         {
           method: 'GET',
-          headers: yield select((state) => state.authHeaders),
+          headers: yield select((state) => state.authHeader),
         },
       );
-      
+
       if (!json.errors) {
         yield put({
           type: FETCH_COMMENTS_SUCCESS,
@@ -181,7 +181,7 @@ function* fetchCommentsSaga() {
 function* editPostSaga() {
   while (true) {
     const action = yield take(EDIT_POST);
-    
+
     try {
       let { response, json } = yield call(
         fetchData, `/posts/${action.payload.id}`,
@@ -193,10 +193,10 @@ function* editPostSaga() {
               description: action.payload.description,
             }
           }),
-          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},  
+          headers: { ...yield select((state) => state.authHeader), 'content-type': 'application/json'},
         },
       );
-      
+
       if (json && response.status === 200) {
         yield put({ type: EDIT_POST_SUCCESS, payload: json });
       } else {
@@ -212,7 +212,7 @@ function* editPostSaga() {
 function* editCommentSaga() {
   while (true) {
     const action = yield take(EDIT_COMMENT);
-    
+
     try {
       let { response, json } = yield call(
         fetchData, `/comments/${action.payload.id}`,
@@ -221,10 +221,10 @@ function* editCommentSaga() {
           body: JSON.stringify({
             message: action.payload.message,
           }),
-          headers: { ...yield select((state) => state.authHeaders), 'content-type': 'application/json'},  
+          headers: { ...yield select((state) => state.authHeader), 'content-type': 'application/json'},
         },
       );
-      
+
       if (response.status === 200) {
         yield put({ type: EDIT_COMMENT_SUCCESS, payload: json });
       } else {
@@ -239,17 +239,17 @@ function* editCommentSaga() {
 function* deleteCommentSaga() {
   while (true) {
     const action = yield take(DELETE_COMMENT);
-    
+
     try {
       let { response } = yield call(
         fetchData, `/comments/${action.payload.id}`,
         {
           method: 'DELETE',
-          headers: yield select((state) => state.authHeaders),  
+          headers: yield select((state) => state.authHeader),
         },
         false
       );
-      
+
       if (response.status === 204) {
         yield put({ type: DELETE_COMMENT_SUCCESS, payload: action.payload });
       } else {
@@ -265,17 +265,17 @@ function* deleteCommentSaga() {
 function* deletePostSaga() {
   while (true) {
     const action = yield take(DELETE_POST);
-    
+
     try {
       let { response } = yield call(
         fetchData, `/posts/${action.payload.id}`,
         {
           method: 'DELETE',
-          headers: yield select((state) => state.authHeaders),  
+          headers: yield select((state) => state.authHeader),
         },
         false
       );
-      
+
       if (response.status === 204) {
         yield put({ type: DELETE_POST_SUCCESS, payload: { id: action.payload.id } });
       } else {

@@ -9,14 +9,17 @@ import {
   Box,
 } from '@material-ui/core';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { useDispatch, useSelector } from 'react-redux';
-import { LOG_OUT } from '../app/actions';
 import { Link, useHistory } from 'react-router-dom';
+import { useUserContext } from '../../app/UserContext';
 
 function Header() {
-  const dispatch = useDispatch();
   const history = useHistory();
-  const authHeaders = useSelector((state) => state.authHeaders);
+  const { authHeader, setAuthHeader } = useUserContext();
+
+  const handleLogout = () => {
+    setAuthHeader(null);
+    history.replace('/');
+  }
 
   return (
     <AppBar>
@@ -26,14 +29,14 @@ function Header() {
             <Typography variant="h3">/soc/net</Typography>
           </Link>
           {
-            authHeaders &&
+            authHeader &&
             <Box marginLeft="auto" display="flex" alignItems="center">
               <IconButton size="small" onClick={() =>  history.push('/profiles')}>
                 <Avatar />
               </IconButton>
               <IconButton
                 style={{ color: 'white' }}
-                onClick={() => dispatch({ type: LOG_OUT})}
+                onClick={handleLogout}
               >
                 <ExitToAppIcon />
               </IconButton>
@@ -44,5 +47,5 @@ function Header() {
     </AppBar>
   );
 }
-  
+
 export default Header;
