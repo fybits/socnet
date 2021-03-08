@@ -9,7 +9,7 @@ const ErrorPage = ({ error }) => {
       justify="center"
       container style={{ marginTop: 70 }}
     >
-      <Grid item xs sm={8} md={5} xl={4} >
+      <Grid item xs sm={10} md={6} lg={4}>
         <Typography variant="h1">{error || history.location.state || 'Unknown error'}</Typography>
         <Link href="#" onClick={() => history.goBack()}>go back</Link>
       </Grid>

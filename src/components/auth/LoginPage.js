@@ -13,8 +13,6 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import RouteLink from '../common/RouteLink';
-import { baseURL } from '../../app/config';
-import axios from 'axios';
 import { useUserContext } from '../../app/UserContext';
 
 const styles = {

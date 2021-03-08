@@ -12,6 +12,7 @@ function PostForm({ id, onClose, defaultTitle, defaultDescription }) {
   const submitForm = async (event) => {
     if (id) {
       // edit
+      await axios.put(`${baseURL}/posts/${id}`, { title, description });
       onClose();
     } else {
       // create

@@ -5,7 +5,7 @@ import { useUserContext } from '../../app/UserContext';
 function AuthRoute({ path, children, unauthOnly = false }) {
     const { authHeader } = useUserContext();
     let authorize = unauthOnly ^ !!authHeader;
-
+    console.log(authorize)
     return (
         authorize
         ?

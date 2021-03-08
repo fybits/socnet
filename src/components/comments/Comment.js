@@ -13,17 +13,28 @@ import CommentsBlock from './CommentsBlock';
 import CommentForm from './CommentForm';
 import RouteLink from '../common/RouteLink';
 import { useUserContext } from '../../app/UserContext';
+import UserAvatar from '../common/UserAvatar';
+import axios from 'axios';
+import { baseURL, timeAgo } from '../../app/config';
 
 const Comment = ({ id, message, user_id, user, commentable_id, commentable_type, created_at }) => {
   const { userData: { id: authUser }} = useUserContext();
 
   const [showEditModal, setShowEditModal] = useState(null);
+
+  const deleteComment = async () => {
+    const { data } = await axios.delete(`${baseURL}/comments/${id}`);
+  };
+
   return (
     <ListItem
-      style={{ paddingRight: 0, paddingLeft: 8 }}>
+      style={{ paddingRight: 0, paddingLeft: 4, borderTop: '1px solid gray' }}>
       <ListItemText>
-        <RouteLink to={`/profiles/${user_id}`}>{`${user.first_name} ${user.last_name}  `}</RouteLink>
-        <Typography variant="caption" style={{ color: 'gray' }}>{new Date(created_at).toUTCString()}</Typography>
+        <RouteLink to={`/profiles/${user_id}`}>
+          <UserAvatar userId={user_id} />
+          {`${user.first_name} ${user.last_name}  `}
+          </RouteLink>
+        <Typography variant="caption" style={{ color: 'gray' }}>{timeAgo.format(new Date(created_at))}</Typography>
         <Typography paragraph>{message}</Typography>
         {
             authUser === user_id
@@ -39,7 +50,7 @@ const Comment = ({ id, message, user_id, user, commentable_id, commentable_type,
                 </IconButton>
                 <IconButton
                   size="small"
-                  onClick={() => {}}
+                  onClick={deleteComment}
                 >
                   <DeleteIcon />
                 </IconButton>

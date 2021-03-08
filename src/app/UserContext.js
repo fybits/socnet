@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { baseURL } from './config';
 
 const UserContext = createContext();
@@ -7,8 +8,8 @@ const UserContext = createContext();
 export const useUserContext = () => useContext(UserContext);
 
 export const UserContextProvider = ({ children }) => {
-  const [userData, setUserData] = useState({});
-  const [authHeader, setAuthHeader] = useState(null);
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData')));
+  const [authHeader, setAuthHeader] = useState(JSON.parse(localStorage.getItem('authHeader')));
 
   const signIn = async (formData) => {
     const { status, data, headers } = await axios.post(`${baseURL}/auth/signin`, formData);
@@ -21,6 +22,14 @@ export const UserContextProvider = ({ children }) => {
       localStorage.setItem('authHeader', JSON.stringify(newAuthHeader));
     }
   };
+
+  const logout = () => {
+    localStorage.removeItem('userData');
+    localStorage.removeItem('authHeader');
+    setUserData(null);
+    setAuthHeader(null);
+    window.location.reload();
+  }
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('userData'));
@@ -36,18 +45,8 @@ export const UserContextProvider = ({ children }) => {
       config.headers.Authorization = authHeader;
       return config;
     });
-    const resInterceptor = axios.interceptors.response.use((response) => response,
-    (error) => {
-      if (error.response.status === 401) {
-        window.location.reload();
-        localStorage.removeItem('userData');
-        localStorage.removeItem('authHeader');
-      }
-      return Promise.reject(error)
-    });
     return () => {
       axios.interceptors.request.eject(reqInterceptor);
-      axios.interceptors.response.eject(resInterceptor);
     }
   }, [authHeader])
 
@@ -58,6 +57,7 @@ export const UserContextProvider = ({ children }) => {
       authHeader: authHeader,
       setAuthHeader: setAuthHeader,
       signIn,
+      logout,
     }}>
       {children}
     </UserContext.Provider>

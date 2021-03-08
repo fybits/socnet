@@ -17,12 +17,18 @@ import CommentIcon from '@material-ui/icons/Comment';
 import RouteLink from '../common/RouteLink';
 import PostForm from './PostForm';
 import { useUserContext } from '../../app/UserContext';
-import { timeAgo } from '../../app/config';
+import { baseURL, timeAgo } from '../../app/config';
+import axios from 'axios';
+import UserAvatar from '../common/UserAvatar';
 
-function Post({ id, user_id, user, title, description, created_at }) {
+const Post = ({ id, user_id, user, title, description, created_at }) => {
   const history = useHistory();
   const { userData: { id: currentUser }} = useUserContext();
   const [showEditModal, setShowEditModal] = useState(false);
+
+  const deletePost = async () => {
+    const { data } = await axios.delete(`${baseURL}/posts/${id}`);
+  };
 
   return (
     <Card style={{ marginTop: 8 }}>
@@ -38,7 +44,10 @@ function Post({ id, user_id, user, title, description, created_at }) {
           <CardHeader
             title={(
               <>
-                <RouteLink to={`/profiles/${user_id}`}>{`${user?.first_name} ${user?.last_name} `}</RouteLink>
+                <RouteLink to={`/profiles/${user_id}`}>
+                  <UserAvatar userId={user_id} />
+                  {`${user?.first_name} ${user?.last_name} `}
+                </RouteLink>
                  - {title}
               </>
             )}
@@ -54,9 +63,7 @@ function Post({ id, user_id, user, title, description, created_at }) {
                     }} size="small">
                     <EditIcon />
                   </IconButton>
-                  <IconButton size="small" onClick={(event) => {
-
-                  }}>
+                  <IconButton size="small" onClick={deletePost}>
                     <DeleteIcon />
                   </IconButton>
                 </CardActions>

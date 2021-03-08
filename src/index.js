@@ -4,13 +4,30 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { CssBaseline } from '@material-ui/core';
-import { UserContextProvider } from './app/UserContext';
+import axios from 'axios';
+
+const authHeader = JSON.parse(localStorage.getItem('authHeader'));
+if (authHeader) {
+  const reqInterceptor = axios.interceptors.request.use((config) => {
+    config.headers.Authorization = authHeader;
+    return config;
+  });
+}
+axios.interceptors.response.use((response) => response,
+(error) => {
+  if (error.response.status === 401) {
+    window.location.reload();
+    localStorage.removeItem('userData');
+    localStorage.removeItem('authHeader');
+  }
+  return Promise.reject(error)
+});
 
 ReactDOM.render(
-  <UserContextProvider>
+  <>
     <CssBaseline />
     <App />
-  </UserContextProvider>,
+  </>,
   document.getElementById('root')
 );
 

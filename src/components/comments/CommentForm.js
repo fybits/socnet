@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { TextField, Box, Button } from '@material-ui/core';
+import axios from 'axios';
+import { baseURL } from '../../app/config';
 
 function CommentForm({ id, type, edit, defaultValue, onClose }) {
   const [message, setMessage] = useState(defaultValue);
 
-  let commentableType = type && (type.charAt(0).toUpperCase() + type.substring(1));
+  // let commentableType = type && (type.charAt(0).toUpperCase() + type.substring(1));
   let isEdit = edit || false;
 
-  const handleSend = (event) => {
+  const handleSend = async (event) => {
     event.preventDefault();
     if (message.trim().length > 0) {
       if (!isEdit) {
-        // New comment
+        const { data } = await axios.post(`${baseURL}/comments`, {
+          message,
+          commentable_type: type,
+          commentable_id: id,
+        });
       } else {
         // update comment
         onClose();

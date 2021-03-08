@@ -24,7 +24,7 @@ const FeedPage = () => {
       container style={{ marginTop: 70 }}
     >
       <ScrollToTopFab />
-      <Grid item xs sm={8} md={5} xl={4} >
+      <Grid item xs sm={10} md={6} lg={4}>
         <PostForm />
         {
           posts.map(({ id, ...rest }) => (

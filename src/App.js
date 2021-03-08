@@ -8,22 +8,25 @@ import SignupPage from './components/auth/SignupPage';
 import PostPage from './components/pages/PostPage';
 import ProfilePage from './components/pages/ProfilePage';
 import ErrorPage from './components/pages/ErrorPage';
+import Footer from './components/common/Footer';
+import { UserContextProvider } from './app/UserContext';
 
 function App() {
 
   return (
     <BrowserRouter>
+    <UserContextProvider>
       <Header />
       <RouterSwitch>
         <Redirect exact from="/" to="/home"/>
-        <AuthRoute path="/home">
-          <FeedPage />
-        </AuthRoute>
         <AuthRoute path="/posts/:id/">
           <PostPage />
         </AuthRoute>
         <AuthRoute path="/profiles/:id?">
           <ProfilePage />
+        </AuthRoute>
+        <AuthRoute path="/home">
+          <FeedPage />
         </AuthRoute>
         <AuthRoute path="/error">
           <ErrorPage />
@@ -38,6 +41,8 @@ function App() {
           <ErrorPage error="404 Not Found"/>
         </Route>
       </RouterSwitch>
+      <Footer />
+    </UserContextProvider>
     </BrowserRouter>
   );
 }

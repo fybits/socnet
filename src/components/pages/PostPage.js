@@ -5,31 +5,27 @@ import { useParams, useHistory } from 'react-router-dom';
 import ScrollToTopFab from '../common/ScrollToTopFab';
 import { Grid, Box, CircularProgress } from '@material-ui/core';
 import CommentsBlock from '../comments/CommentsBlock';
+import axios from 'axios';
 
 const PostPage = () => {
   const { id } = useParams();
 
-  // const isFetching = useSelector((state) => state.isFetching);
-  // const authHeader = useSelector((state) => state.authHeader);
   const history = useHistory();
+  const [loading, setLoading] = useState(false);
   const [post, setPost] = useState({});
 
-  // useEffect(() => {
-  //   fetch(`${baseURL}/posts/${id}/`, { headers: authHeader })
-  //     .then((response) => {
-  //       console.log(response.status)
-  //       if (response.status !== 200) {
-  //         history.replace('/error', `${response.status} ${response.statusText}`);
-  //         return Promise.reject(`${response.status} ${response.statusText}`);
-  //       }
-  //       return response.json()
-  //     })
-  //     .then((json) => setPost(json))
-  //     .catch((error) => { console.error(error); });
-
-  //   // dispatch({ type: FETCH_COMMENTS , payload: { background: false } })
-  //   // eslint-disable-next-line
-  // }, []);
+  useEffect(() => {
+    const fetchPost = async () => {
+      setLoading(true);
+      const { data } = await axios.get(`${baseURL}/posts/${id}`);
+      if (data) {
+        setPost(data);
+        console.log(data)
+      }
+      setLoading(false);
+    };
+    fetchPost();
+  }, [id]);
 
   return (
     <Grid
@@ -37,17 +33,19 @@ const PostPage = () => {
       container style={{ marginTop: 70, marginBottom: '50vh'}}
     >
       <ScrollToTopFab />
-      <Grid item xs sm={8} md={5} xl={4}>
-          {/* <Post {...post}/>
+      <Grid item xs sm={10} md={6} lg={4}>
           {
-            isFetching
+            loading || !post.id
             ?
             <Box display="flex" marginTop={2} justifyContent="center">
               <CircularProgress  />
             </Box>
             :
+            <>
+            <Post {...post}/>
             <CommentsBlock id={id} type="post"/>
-          } */}
+            </>
+          }
       </Grid>
     </Grid>
   );
